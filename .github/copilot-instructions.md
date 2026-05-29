@@ -1,0 +1,5 @@
+- [x] Build a React + Vite + TypeScript app for דובב שפתי ישנים
+- [x] Include RTL support and Hebrew-friendly layout
+- [x] Add Tailwind CSS configuration and fonts
+- [x] Set up React Router routes for /, /today, /spark
+- [x] Provide placeholder components, Supabase client, and queries
