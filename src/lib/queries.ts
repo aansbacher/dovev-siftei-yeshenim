@@ -52,7 +52,7 @@ export async function getTzaddikimForDate(hebrewDay: number, hebrewMonth: string
     : query.or(months.map(m => `hebrew_month.eq.${m}`).join(','))
 
   const { data, error } = await filteredQuery
-    .order('importance_score', { ascending: false })
+    .order('importance_score', { ascending: false, nullsFirst: false })
     .limit(4)
 
   if (error) {
