@@ -39,15 +39,19 @@ export function TzaddikSlider({ tzaddikim }: TzaddikSliderProps) {
       {/* Track */}
       <div
         className="overflow-hidden"
+        dir="ltr"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
         <div
           className="flex transition-transform duration-300 ease-out will-change-transform"
-          style={{ transform: `translateX(${-current * 100}%)` }}
+          style={{
+            width: `${tzaddikim.length * 100}%`,
+            transform: `translateX(${-(current * 100) / tzaddikim.length}%)`,
+          }}
         >
           {tzaddikim.map((tz) => (
-            <div key={tz.id} className="min-w-full">
+            <div key={tz.id} dir="rtl" style={{ width: `${100 / tzaddikim.length}%` }}>
               <TzaddikCard tzaddik={tz} />
             </div>
           ))}

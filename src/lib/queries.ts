@@ -28,7 +28,7 @@ function mapRow(row: any): Tzaddik {
     stream:         row.stream,
     role:           row.role,
     imageUrl:       row.image_url ?? row.image_filename,
-    sources:        row.sources ? String(row.sources).split('|').map((s: string) => s.trim()).filter(Boolean) : [],
+    sources:        Array.isArray(row.sources) ? row.sources : (row.sources ? String(row.sources).split('|').map((s: string) => s.trim()).filter(Boolean) : []),
     importanceScore: row.importance_score ? Number(row.importance_score) : 0,
     biography:      row.biography,
     story:          row.story,

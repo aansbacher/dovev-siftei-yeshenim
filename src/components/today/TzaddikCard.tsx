@@ -83,7 +83,7 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
       </div>
       <div className="p-5">
         <TabsPrimitive.Root defaultValue="bio" className="space-y-4" dir="rtl">
-          <TabsPrimitive.List className="flex flex-wrap gap-2 rounded-full bg-slate-100 p-2 dark:bg-slate-900/80 justify-end">
+          <TabsPrimitive.List className="flex flex-wrap gap-2 rounded-full bg-slate-100 p-2 dark:bg-slate-900/80 justify-start">
             {[
               { value: 'story', label: 'סיפור' },
               { value: 'teaching', label: 'מתורתו' },
