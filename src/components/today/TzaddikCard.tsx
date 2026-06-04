@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { Bookmark, Share2, User, Heart, Plus, ChevronDown, ChevronUp } from 'lucide-react'
+import { Share2, User, Heart, ChevronDown, ChevronUp } from 'lucide-react'
 import type { Tzaddik } from '../../types'
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 
 const PREVIEW_WORDS = 80
@@ -28,9 +27,7 @@ function ExpandableText({ text }: { text: string }) {
 
   return (
     <div>
-      <p className="whitespace-pre-wrap leading-7">
-        {expanded || !isLong ? text : preview + '…'}
-      </p>
+      <p className="whitespace-pre-wrap leading-7">{expanded || !isLong ? text : preview + '…'}</p>
       {isLong && (
         <button
           onClick={() => setExpanded(!expanded)}
@@ -51,96 +48,133 @@ interface TzaddikCardProps {
   tzaddik: Tzaddik
 }
 
+type ContentKey = 'story' | 'torah' | 'biography'
+const TABS: { value: string; label: string; key: ContentKey; empty: string }[] = [
+  { value: 'story',    label: 'סיפור',  key: 'story',     empty: 'אין סיפור זמין' },
+  { value: 'teaching', label: 'מתורתו', key: 'torah',     empty: 'אין תורה זמינה' },
+  { value: 'bio',      label: 'רקע',    key: 'biography', empty: 'אין רקע זמין' },
+]
+
 export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
   const [liked, setLiked] = useState(false)
+
   return (
-    <article className="rounded-[2rem] border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950/90">
-      <div className="relative overflow-hidden rounded-t-[2rem] bg-gradient-to-r from-violet-100 via-fuchsia-100 to-rose-100 p-5 dark:from-violet-950/40 dark:via-fuchsia-950/30 dark:to-rose-950/20">
-        <Bookmark className="absolute left-5 top-5 h-6 w-6 text-indigo-600" />
-        <div className="flex flex-col gap-3 text-right">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Badge>{tzaddik.stream}</Badge>
-              <Badge>{tzaddik.role}</Badge>
-            </div>
+    <article
+      dir="rtl"
+      className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
+    >
+      {/* ── Hero ── */}
+      <div className="relative">
+        {tzaddik.imageUrl ? (
+          <img
+            src={tzaddik.imageUrl}
+            alt={tzaddik.popularName}
+            className="h-56 w-full object-cover object-top sm:h-64"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-56 items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-100 to-rose-100 sm:h-64 dark:from-violet-950/40 dark:via-fuchsia-950/30 dark:to-rose-950/20">
+            <User className="h-24 w-24 text-indigo-200 dark:text-indigo-900" />
           </div>
-          <div className="mx-auto flex h-48 w-48 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-slate-500 dark:bg-slate-800">
-            {tzaddik.imageUrl ? (
-              <img src={tzaddik.imageUrl} alt={tzaddik.popularName} className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-16 w-16" />
+        )}
+
+        {/* Bottom gradient + name overlay */}
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <p className="text-xl font-bold leading-tight text-white sm:text-2xl">{tzaddik.popularName}</p>
+          {tzaddik.years && <p className="mt-0.5 text-sm text-white/70">{tzaddik.years}</p>}
+        </div>
+
+        {/* Badges – top right (RTL start) */}
+        {(tzaddik.stream || tzaddik.role) && (
+          <div className="absolute right-3 top-3 flex flex-wrap gap-1.5">
+            {tzaddik.stream && (
+              <span className="rounded-full bg-white/85 px-2.5 py-1 text-xs font-semibold text-slate-800 backdrop-blur-sm">
+                {tzaddik.stream}
+              </span>
+            )}
+            {tzaddik.role && (
+              <span className="rounded-full bg-white/85 px-2.5 py-1 text-xs font-semibold text-slate-800 backdrop-blur-sm">
+                {tzaddik.role}
+              </span>
             )}
           </div>
-          <div className="space-y-2 text-right">
-            <p className="text-3xl font-semibold text-slate-900 dark:text-slate-100">{tzaddik.popularName}</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{tzaddik.fullName}</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{tzaddik.years}</p>
-          </div>
-          <div className="rounded-3xl bg-slate-50 p-4 text-right text-sm leading-6 text-slate-600 dark:bg-slate-900/80 dark:text-slate-300">
-            <p className="font-semibold text-slate-900 dark:text-slate-100">“{tzaddik.quote}”</p>
-          </div>
-        </div>
+        )}
       </div>
-      <div className="p-5">
-        <TabsPrimitive.Root defaultValue="bio" className="space-y-4" dir="rtl">
-          <TabsPrimitive.List className="flex flex-wrap gap-2 rounded-full bg-slate-100 p-2 dark:bg-slate-900/80 justify-start">
-            {[
-              { value: 'story', label: 'סיפור' },
-              { value: 'teaching', label: 'מתורתו' },
-              { value: 'bio', label: 'רקע עליו' }
-            ].map(({ value, label }) => (
+
+      {/* ── Body ── */}
+      <div className="space-y-4 p-4 sm:p-5">
+        {/* Full name */}
+        {tzaddik.fullName && (
+          <p className="text-xs text-slate-500 dark:text-slate-400">{tzaddik.fullName}</p>
+        )}
+
+        {/* Quote */}
+        {tzaddik.quote && (
+          <div className="rounded-2xl bg-indigo-50 px-4 py-3 dark:bg-indigo-500/10">
+            <p className="text-sm font-semibold leading-relaxed text-indigo-900 dark:text-indigo-200">
+              ״{tzaddik.quote}״
+            </p>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <TabsPrimitive.Root defaultValue="bio" dir="rtl" className="space-y-3">
+          <TabsPrimitive.List className="flex rounded-full bg-slate-100 p-1 dark:bg-slate-900/80">
+            {TABS.map(({ value, label }) => (
               <TabsPrimitive.Trigger
                 key={value}
                 value={value}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition data-[state=active]:bg-accent data-[state=active]:text-white dark:text-slate-300"
+                className="flex-1 rounded-full py-2 text-sm font-semibold text-slate-600 transition data-[state=active]:bg-accent data-[state=active]:text-white dark:text-slate-300"
               >
                 {label}
               </TabsPrimitive.Trigger>
             ))}
           </TabsPrimitive.List>
-          <TabsPrimitive.Content value="story" className="text-sm text-slate-600 dark:text-slate-300">
-            {tzaddik.story
-              ? <ExpandableText text={tzaddik.story} />
-              : <span className="text-slate-400 italic">אין סיפור זמין</span>}
-          </TabsPrimitive.Content>
-          <TabsPrimitive.Content value="teaching" className="text-sm text-slate-600 dark:text-slate-300">
-            {tzaddik.torah
-              ? <ExpandableText text={tzaddik.torah} />
-              : <span className="text-slate-400 italic">אין תורה זמינה</span>}
-          </TabsPrimitive.Content>
-          <TabsPrimitive.Content value="bio" className="text-sm text-slate-600 dark:text-slate-300">
-            {tzaddik.biography
-              ? <ExpandableText text={tzaddik.biography} />
-              : <span className="text-slate-400 italic">אין רקע זמין</span>}
-          </TabsPrimitive.Content>
+
+          {TABS.map(({ value, key, empty }) => {
+            const content = tzaddik[key]
+            return (
+              <TabsPrimitive.Content
+                key={value}
+                value={value}
+                className="min-h-[4rem] text-sm text-slate-600 dark:text-slate-300"
+              >
+                {content
+                  ? <ExpandableText text={content} />
+                  : <span className="italic text-slate-400">{empty}</span>}
+              </TabsPrimitive.Content>
+            )
+          })}
         </TabsPrimitive.Root>
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
-          <div className="flex gap-2">
-            <Button 
-              variant={liked ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => setLiked(!liked)}
-              className={liked ? "bg-indigo-600 hover:bg-indigo-700 text-white" : ""}
-            >
-              <Heart className={`ml-2 h-4 w-4 ${liked ? "fill-current" : ""}`} />
-              קראתי
-            </Button>
-            <Button variant="secondary" size="sm">
-              <Plus className="ml-2 h-4 w-4" />
-              הוסף משלך
-            </Button>
-          </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <Button
+            variant={liked ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setLiked(!liked)}
+            className={liked ? 'bg-indigo-600 text-white hover:bg-indigo-700' : ''}
+          >
+            <Heart className={`ml-2 h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+            קראתי
+          </Button>
           <Button variant="secondary" size="sm">
             <Share2 className="ml-2 h-4 w-4" />
             שתף
           </Button>
-          <div className="flex flex-wrap gap-2">
-            {tzaddik.sources?.map((source) => (
-              <span key={source} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                {source}
-              </span>
-            ))}
-          </div>
+          {tzaddik.sources && tzaddik.sources.length > 0 && (
+            <div className="flex flex-1 flex-wrap justify-end gap-1.5">
+              {tzaddik.sources.map((s) => (
+                <span
+                  key={s}
+                  className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </article>
