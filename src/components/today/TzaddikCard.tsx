@@ -50,9 +50,9 @@ interface TzaddikCardProps {
 
 type ContentKey = 'story' | 'torah' | 'biography'
 const TABS: { value: string; label: string; key: ContentKey; empty: string }[] = [
-  { value: 'story',    label: 'סיפור',  key: 'story',     empty: 'אין סיפור זמין' },
-  { value: 'teaching', label: 'מתורתו', key: 'torah',     empty: 'אין תורה זמינה' },
   { value: 'bio',      label: 'רקע',    key: 'biography', empty: 'אין רקע זמין' },
+  { value: 'teaching', label: 'מתורתו', key: 'torah',     empty: 'אין תורה זמינה' },
+  { value: 'story',    label: 'סיפור',  key: 'story',     empty: 'אין סיפור זמין' },
 ]
 
 export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
