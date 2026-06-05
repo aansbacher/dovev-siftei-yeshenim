@@ -27,7 +27,7 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
   }
 
   return (
-    <div className="mt-6 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/80 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-6 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/80 sm:flex-row sm:items-center sm:justify-between overflow-hidden">
       {/* Day navigation */}
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" onClick={() => moveDay(-1)}
