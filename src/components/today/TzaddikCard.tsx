@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { Share2, User, Heart, ChevronDown, ChevronUp } from 'lucide-react'
+import { Share2, Heart, ChevronDown, ChevronUp } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { Button } from '../ui/button'
 
@@ -61,7 +61,7 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
   return (
     <article
       dir="rtl"
-      className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
+      className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-md transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-950"
     >
       {/* ── Hero ── */}
       <div className="relative">
@@ -73,8 +73,13 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="flex h-56 items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-100 to-rose-100 sm:h-64 dark:from-violet-950/40 dark:via-fuchsia-950/30 dark:to-rose-950/20">
-            <User className="h-24 w-24 text-indigo-200 dark:text-indigo-900" />
+          <div className="relative flex h-56 items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-violet-900 to-purple-900 sm:h-64">
+            {/* decorative circles */}
+            <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/5" />
+            <div className="pointer-events-none absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5" />
+            <span className="relative select-none font-heading text-8xl font-black leading-none text-white/20 sm:text-9xl">
+              {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
+            </span>
           </div>
         )}
 
@@ -111,21 +116,27 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
 
         {/* Quote */}
         {tzaddik.quote && (
-          <div className="rounded-2xl bg-indigo-50 px-4 py-3 dark:bg-indigo-500/10">
-            <p className="text-sm font-semibold leading-relaxed text-indigo-900 dark:text-indigo-200">
-              ״{tzaddik.quote}״
+          <div className="relative rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 px-5 py-4 dark:from-indigo-950/50 dark:to-violet-950/40">
+            <span aria-hidden className="pointer-events-none absolute right-3 top-0 select-none font-serif text-6xl leading-none text-indigo-200 dark:text-indigo-800">
+              ״
+            </span>
+            <p className="relative text-sm font-semibold leading-7 text-indigo-900 dark:text-indigo-100">
+              {tzaddik.quote}
             </p>
           </div>
         )}
 
         {/* Tabs */}
         <TabsPrimitive.Root defaultValue="bio" dir="rtl" className="space-y-3">
-          <TabsPrimitive.List className="flex rounded-full bg-slate-100 p-1 dark:bg-slate-900/80">
+          <TabsPrimitive.List className="flex border-b border-slate-200 dark:border-slate-700">
             {TABS.map(({ value, label }) => (
               <TabsPrimitive.Trigger
                 key={value}
                 value={value}
-                className="flex-1 rounded-full py-2 text-sm font-semibold text-slate-600 transition data-[state=active]:bg-accent data-[state=active]:text-white dark:text-slate-300"
+                className="flex-1 pb-2.5 pt-1 text-sm font-semibold text-slate-400 transition
+                  data-[state=active]:border-b-2 data-[state=active]:border-accent
+                  data-[state=active]:text-accent
+                  dark:text-slate-500 dark:data-[state=active]:text-indigo-400"
               >
                 {label}
               </TabsPrimitive.Trigger>
@@ -138,7 +149,7 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
               <TabsPrimitive.Content
                 key={value}
                 value={value}
-                className="min-h-[4rem] text-sm text-slate-600 dark:text-slate-300"
+                className="min-h-[4rem] text-sm leading-7 text-slate-600 dark:text-slate-300"
               >
                 {content
                   ? <ExpandableText text={content} />
