@@ -12,7 +12,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 // id=9672 (bio+story = Piaseczna content) — adding matching Piaseczna torah
 // id=9674 (bio+story = Piaseczna; quote = Carlebach quoting Nankenski) — adding torah

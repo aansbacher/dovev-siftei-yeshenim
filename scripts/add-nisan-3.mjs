@@ -12,7 +12,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 // [21] id=10876 — רבי ישכר בעריש איינשטיין מזידיטשוב — story only
 const { error } = await supabase.from('tzaddikim').update({

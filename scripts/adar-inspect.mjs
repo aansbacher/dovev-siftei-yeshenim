@@ -12,7 +12,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 const ids = [
   10643,11791,10652,10644,10634,10658,10662,10651,10653,10665,

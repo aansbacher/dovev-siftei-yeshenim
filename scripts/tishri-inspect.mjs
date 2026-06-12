@@ -12,7 +12,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 // Inspect suspicious day-30 records + famous ones
 const ids = [9607, 9601, 9602, 9604, 9606, 9592, 9593, 9586, 11807,

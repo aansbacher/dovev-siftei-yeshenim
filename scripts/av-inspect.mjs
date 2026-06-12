@@ -12,7 +12,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 // Focus on records missing bio (some of the most famous rabbis)
 const ids = [11404,11463,11797,11926,11345,11347,11383,11392,11387,11380,11803,11449,11456,11796]

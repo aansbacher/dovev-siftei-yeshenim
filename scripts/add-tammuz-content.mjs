@@ -17,7 +17,7 @@ function parseEnv(f) {
   }, {})
 }
 const env = parseEnv(path.resolve('.env.local'))
-const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 // ─────────────────────────────────────────────
 // חלק א׳ — ציטוטים בלבד (43 רשומות שיש להן bio/story/torah)

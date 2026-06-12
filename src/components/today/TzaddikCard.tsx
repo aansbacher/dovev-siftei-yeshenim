@@ -55,8 +55,33 @@ const TABS: { value: string; label: string; key: ContentKey; empty: string }[] =
   { value: 'story',    label: 'סיפור',  key: 'story',     empty: 'אין סיפור זמין' },
 ]
 
+const LIKED_KEY = 'dshy_liked'
+
+function getLiked(): Set<number> {
+  try { return new Set(JSON.parse(localStorage.getItem(LIKED_KEY) ?? '[]')) }
+  catch { return new Set() }
+}
+
+function toggleLiked(id: number): boolean {
+  const s = getLiked()
+  s.has(id) ? s.delete(id) : s.add(id)
+  localStorage.setItem(LIKED_KEY, JSON.stringify([...s]))
+  return s.has(id)
+}
+
+async function shareTzaddik(tzaddik: { popularName: string; quote?: string }) {
+  const text = tzaddik.quote
+    ? `${tzaddik.popularName} — "${tzaddik.quote}"\n\nדובב שפתי ישנים`
+    : `${tzaddik.popularName} — דובב שפתי ישנים`
+  if (navigator.share) {
+    await navigator.share({ text, url: window.location.href }).catch(() => {})
+  } else {
+    await navigator.clipboard.writeText(text).catch(() => {})
+  }
+}
+
 export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(() => getLiked().has(tzaddik.id))
 
   return (
     <article
@@ -164,13 +189,13 @@ export function TzaddikCard({ tzaddik }: TzaddikCardProps) {
           <Button
             variant={liked ? 'primary' : 'secondary'}
             size="sm"
-            onClick={() => setLiked(!liked)}
+            onClick={() => setLiked(toggleLiked(tzaddik.id))}
             className={liked ? 'bg-indigo-600 text-white hover:bg-indigo-700' : ''}
           >
             <Heart className={`ml-2 h-4 w-4 ${liked ? 'fill-current' : ''}`} />
             קראתי
           </Button>
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm" onClick={() => shareTzaddik(tzaddik)}>
             <Share2 className="ml-2 h-4 w-4" />
             שתף
           </Button>
