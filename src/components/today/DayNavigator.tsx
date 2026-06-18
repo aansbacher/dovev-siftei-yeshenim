@@ -1,5 +1,6 @@
 import { HDate } from '@hebcal/core'
 import { getHebrewDate } from '../../lib/hebrewDate'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 
 interface DayNavigatorProps {
   date: Date
@@ -11,7 +12,7 @@ function moveHebrewMonth(date: Date, delta: number): Date {
   let month = hd.getMonth() + delta
   let year  = hd.getFullYear()
   const monthsInYear = HDate.monthsInYear(year)
-  if (month < 1)           { year -= 1; month = HDate.monthsInYear(year) }
+  if (month < 1)               { year -= 1; month = HDate.monthsInYear(year) }
   else if (month > monthsInYear) { year += 1; month = 1 }
   return new HDate(1, month, year).greg()
 }
@@ -27,48 +28,67 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/80">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">דלג לתאריך</p>
+    <div className="rounded-2xl border border-gray-light bg-white px-4 py-4 shadow-sm">
+      <p className="text-xs font-semibold text-navy/30 uppercase tracking-widest text-center mb-4">
+        ניווט יומי
+      </p>
 
-      {/* Day + month navigation */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex gap-1.5">
-          <button type="button" onClick={() => moveDay(-1)}
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-            ← יום
-          </button>
-          <button type="button" onClick={() => onChange(moveHebrewMonth(date, -1))}
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-            ← חודש
-          </button>
+      {/* Day navigation */}
+      <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => moveDay(-1)}
+          className="flex items-center gap-1.5 px-4 py-3 rounded-xl bg-cream border border-gray-light text-navy font-semibold text-sm transition hover:bg-cream-dark active:scale-95"
+        >
+          <ChevronRight className="h-4 w-4" />
+          יום קודם
+        </button>
+
+        <div className="text-center flex-1">
+          <p className="text-sm font-bold text-navy">{hebrewDateDisplay}</p>
         </div>
 
-        <div className="text-center">
-          <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{hebrewDateDisplay}</p>
-        </div>
+        <button
+          type="button"
+          onClick={() => moveDay(1)}
+          className="flex items-center gap-1.5 px-4 py-3 rounded-xl bg-cream border border-gray-light text-navy font-semibold text-sm transition hover:bg-cream-dark active:scale-95"
+        >
+          יום הבא
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      </div>
 
-        <div className="flex gap-1.5">
-          <button type="button" onClick={() => onChange(moveHebrewMonth(date, 1))}
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-            חודש →
-          </button>
-          <button type="button" onClick={() => moveDay(1)}
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-            יום →
-          </button>
-        </div>
+      {/* Month navigation */}
+      <div className="flex items-center justify-between gap-3 mt-2">
+        <button
+          type="button"
+          onClick={() => onChange(moveHebrewMonth(date, -1))}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-light text-navy/50 font-medium text-xs transition hover:border-navy/20 hover:text-navy active:scale-95"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+          חודש קודם
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onChange(moveHebrewMonth(date, 1))}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-light text-navy/50 font-medium text-xs transition hover:border-navy/20 hover:text-navy active:scale-95"
+        >
+          חודש הבא
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
       </div>
 
       {/* Date picker */}
-      <div className="mt-3 flex items-center justify-center">
+      <div className="mt-3 flex justify-center">
         <input
           type="date"
           value={isoDate}
-          onChange={(event) => {
-            const [year, month, day] = event.target.value.split('-').map(Number)
+          onChange={(e) => {
+            const [year, month, day] = e.target.value.split('-').map(Number)
             onChange(new Date(year, month - 1, day))
           }}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          className="rounded-xl border border-gray-light bg-cream px-4 py-2 text-sm text-navy outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
         />
       </div>
     </div>

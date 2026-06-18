@@ -1,9 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { subscribeUser } from '../../lib/queries'
-import { Button } from '../ui/button'
-import { Checkbox } from '../ui/checkbox'
-import { Input } from '../ui/input'
 import type { Subscriber } from '../../types'
 
 export function SubscribeForm() {
@@ -26,13 +23,12 @@ export function SubscribeForm() {
     },
   })
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (!form.viaEmail && !form.viaWhatsapp) {
       setMessage('בחרו לפחות דרך אחת לקבלת דיוור.')
       return
     }
-
     mutation.mutate({
       email: form.email,
       phone: form.phone || undefined,
@@ -42,46 +38,75 @@ export function SubscribeForm() {
   }
 
   return (
-    <section id="subscribe" className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/90">
-      <div className="mb-6 text-right">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">דיוור יומי</p>
-        <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-100">הירשם לקבלת השראה ישירות למייל או וואטסאפ</h2>
-      </div>
-      <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-        <div className="grid gap-4">
-          <Input
-            label="אימייל"
-            value={form.email}
-            onChange={(event) => setForm({ ...form, email: event.target.value })}
-            placeholder="הכנס כתובת אימייל"
+    <section id="subscribe" className="rounded-2xl bg-navy px-5 py-6 shadow-sm">
+      <p className="text-xs font-semibold text-gold/80 uppercase tracking-widest mb-1">הירשם</p>
+      <h2 className="font-heading text-lg font-bold text-cream mb-1">
+        קבל את דברי הצדיקים בכל יום
+      </h2>
+      <p className="text-sm text-cream/50 mb-5">ישירות למייל או לוואטסאפ</p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-cream/60 mb-1.5">אימייל</label>
+          <input
+            type="email"
             required
+            value={form.email}
+            onChange={e => setForm({ ...form, email: e.target.value })}
+            placeholder="your@email.com"
+            className="w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-sm text-cream placeholder-cream/30 outline-none transition focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
+            dir="ltr"
           />
-          <Input
-            label="טלפון ווטסאפ (אופציונלי)"
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-cream/60 mb-1.5">
+            טלפון וואטסאפ <span className="font-normal opacity-60">(אופציונלי)</span>
+          </label>
+          <input
             type="tel"
             value={form.phone}
-            onChange={(event) => setForm({ ...form, phone: event.target.value })}
+            onChange={e => setForm({ ...form, phone: e.target.value })}
             placeholder="+972 50 123 4567"
+            className="w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-sm text-cream placeholder-cream/30 outline-none transition focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
+            dir="ltr"
           />
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Checkbox
-              label="אני רוצה לקבל במייל"
-              checked={form.viaEmail}
-              onChange={(checked) => setForm({ ...form, viaEmail: checked })}
-            />
-            <Checkbox
-              label="אני רוצה לקבל בוואטסאפ"
-              checked={form.viaWhatsapp}
-              onChange={(checked) => setForm({ ...form, viaWhatsapp: checked })}
-            />
-          </div>
         </div>
-        <div className="flex flex-col items-stretch gap-4 sm:items-end">
-          <Button type="submit" className="w-full sm:w-auto">
-            הרשמה
-          </Button>
-          {message ? <p className="text-sm text-slate-600 dark:text-slate-300">{message}</p> : null}
+
+        {/* Delivery method toggles */}
+        <div className="flex gap-3">
+          {[
+            { key: 'viaEmail' as const, label: '📧 מייל' },
+            { key: 'viaWhatsapp' as const, label: '💬 וואטסאפ' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setForm({ ...form, [key]: !form[key] })}
+              className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition ${
+                form[key]
+                  ? 'bg-gold text-navy'
+                  : 'bg-white/10 text-cream/50 hover:bg-white/15'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
+
+        <button
+          type="submit"
+          disabled={mutation.isPending}
+          className="w-full rounded-xl bg-gold py-3.5 text-sm font-bold text-navy transition hover:bg-gold-light disabled:opacity-60 active:scale-[0.99]"
+        >
+          {mutation.isPending ? 'שולח...' : 'הרשמה'}
+        </button>
+
+        {message && (
+          <p className={`text-sm text-center ${message.includes('תודה') ? 'text-success' : 'text-red-400'}`}>
+            {message}
+          </p>
+        )}
       </form>
     </section>
   )

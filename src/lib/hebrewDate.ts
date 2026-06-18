@@ -12,16 +12,59 @@ function toHebrewNumeral(num: number): string {
   return hebrewNumerals[num] || num.toString()
 }
 
+export interface SpecialDay {
+  label: string
+  type: 'holiday' | 'fast' | 'roshchodesh' | 'omer' | 'special'
+}
+
+function getSpecialDays(hd: HDate): SpecialDay[] {
+  try {
+    const dayEvents = HebrewCalendar.calendar({
+      start: hd,
+      end: hd,
+      il: true,
+    })
+
+    const result: SpecialDay[] = []
+    const seen = new Set<string>()
+
+    for (const event of dayEvents) {
+      const f = event.getFlags()
+      const heLabel = event.render('he')
+
+      if (f & flags.ROSH_CHODESH) {
+        if (!seen.has('rc')) { result.push({ label: 'ראש חודש', type: 'roshchodesh' }); seen.add('rc') }
+      } else if (f & flags.MAJOR_FAST) {
+        if (!seen.has(heLabel)) { result.push({ label: heLabel, type: 'fast' }); seen.add(heLabel) }
+      } else if (f & flags.MINOR_FAST) {
+        if (!seen.has(heLabel)) { result.push({ label: heLabel, type: 'fast' }); seen.add(heLabel) }
+      } else if (f & flags.CHAG) {
+        if (!seen.has(heLabel)) { result.push({ label: heLabel, type: 'holiday' }); seen.add(heLabel) }
+      } else if (f & flags.OMER_COUNT) {
+        if (!seen.has('omer')) { result.push({ label: heLabel, type: 'omer' }); seen.add('omer') }
+      }
+    }
+    return result
+  } catch {
+    return []
+  }
+}
+
 export function getHebrewDate(date: Date) {
   const hd = new HDate(date)
   const hebrewDay = hd.getDate()
   const hebrewDayNumeral = toHebrewNumeral(hebrewDay)
   const hebrewMonth = hebrewMonthNames[hd.getMonth()] ?? ''
   const hebrewDateDisplay = `${hebrewDayNumeral} ב${hebrewMonth}`
-
   const gregorianDate = date
 
-  // Find the Shabbat of this week (same day if already Saturday)
+  // Check if Elul (month of Slichot)
+  const specialDays = getSpecialDays(hd)
+  if (hd.getMonth() === 6 && !specialDays.find(s => s.label === 'אלול')) {
+    specialDays.unshift({ label: 'חודש אלול', type: 'special' })
+  }
+
+  // Find the Shabbat of this week
   const saturday = new Date(date)
   const daysUntilSaturday = (6 - saturday.getDay() + 7) % 7
   saturday.setDate(saturday.getDate() + daysUntilSaturday)
@@ -34,7 +77,7 @@ export function getHebrewDate(date: Date) {
   })
 
   const parashaEvent = events.find(e => (e.getFlags() & flags.PARSHA_HASHAVUA) !== 0)
-  const parasha = parashaEvent ? parashaEvent.render('he') : 'לא ידוע'
+  const parasha = parashaEvent ? parashaEvent.render('he') : ''
 
   return {
     hebrewDay,
@@ -43,5 +86,6 @@ export function getHebrewDate(date: Date) {
     hebrewDateDisplay,
     parasha,
     gregorianDate,
+    specialDays,
   }
 }

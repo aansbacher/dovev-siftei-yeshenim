@@ -6,7 +6,7 @@ import { Today } from './pages/Today'
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#f8f5ef] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-bg text-text">
       <AppHeader />
       <main className="mx-auto w-full max-w-lg px-3 py-5 sm:px-4 sm:py-8 md:max-w-xl lg:max-w-2xl">
         <Routes>

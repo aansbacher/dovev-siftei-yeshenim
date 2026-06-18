@@ -1,45 +1,75 @@
+import type { SpecialDay } from '../../lib/hebrewDate'
+
 interface HebrewDateBlockProps {
   hebrewDateDisplay: string
   parasha: string
   gregorianDate: Date
   totalTzaddikim: number
+  specialDays?: SpecialDay[]
 }
 
-export function HebrewDateBlock({ hebrewDateDisplay, parasha, gregorianDate, totalTzaddikim }: HebrewDateBlockProps) {
-  const formattedGregorian = gregorianDate.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+const specialDayColors: Record<string, string> = {
+  holiday:     'bg-gold/20 text-gold border border-gold/30',
+  fast:        'bg-cream/10 text-cream/70 border border-cream/20',
+  roshchodesh: 'bg-gold/25 text-gold border border-gold/40',
+  omer:        'bg-cream/10 text-cream/60 border border-cream/20',
+  special:     'bg-cream/10 text-cream/60 border border-cream/20',
+}
+
+export function HebrewDateBlock({
+  hebrewDateDisplay,
+  parasha,
+  gregorianDate,
+  totalTzaddikim,
+  specialDays = [],
+}: HebrewDateBlockProps) {
+  const formattedGregorian = gregorianDate.toLocaleDateString('he-IL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-bl from-indigo-700 via-violet-700 to-purple-800 p-5 shadow-lg sm:p-6">
-      {/* decorative background circles */}
-      <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
-      <div className="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full bg-white/5" />
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 pt-5 pb-6 shadow-lg">
+      {/* Subtle decorative element */}
+      <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden rounded-2xl">
+        <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-white/[0.03]" />
+        <div className="absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-white/[0.03]" />
+      </div>
 
-      <div className="relative flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-indigo-200/80">יום זיכרון</p>
-          <h2 className="mt-1 font-heading text-4xl font-black leading-tight text-white sm:text-5xl">
-            {hebrewDateDisplay}
-          </h2>
-          <p className="mt-1.5 text-sm text-indigo-200/70">{formattedGregorian}</p>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-              {parasha}
+      <div className="relative">
+        {/* Gregorian + special day badges */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="text-xs text-cream/40">{formattedGregorian}</span>
+          {specialDays.map((sd, i) => (
+            <span
+              key={i}
+              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${specialDayColors[sd.type] ?? 'bg-cream/10 text-cream/60 border border-cream/20'}`}
+            >
+              {sd.label}
             </span>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-indigo-100">
-              {totalTzaddikim} צדיקים
-            </span>
-          </div>
+          ))}
         </div>
 
-        {/* decorative Hebrew letter */}
-        <span
-          aria-hidden
-          className="select-none font-heading text-[6rem] font-black leading-none text-white/8 sm:text-[7rem]"
-          style={{ lineHeight: 1 }}
-        >
-          ✦
-        </span>
+        {/* Hebrew date */}
+        <h1 className="font-heading text-4xl font-black text-cream leading-none sm:text-5xl">
+          {hebrewDateDisplay}
+        </h1>
+
+        {/* Parasha + tzaddikim count */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {parasha && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold text-gold">
+              <span className="opacity-70">פרשת</span>
+              {parasha.replace('פרשת ', '')}
+            </span>
+          )}
+          {totalTzaddikim > 0 && (
+            <span className="text-xs text-cream/30">
+              {totalTzaddikim} בעלי הילולא
+            </span>
+          )}
+        </div>
       </div>
     </section>
   )

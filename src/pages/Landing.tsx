@@ -1,20 +1,58 @@
 import { Hero } from '../components/home/Hero'
-import { Methodology } from '../components/home/Methodology'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
+import { Link } from 'react-router-dom'
 
 export function Landing() {
   return (
-    <div className="grid gap-10 pb-10">
+    <div className="grid gap-5 pb-10">
+      {/* Hero */}
       <Hero />
-      <section className="grid gap-6 rounded-[2rem] bg-white/90 p-6 shadow-sm shadow-slate-200/70 dark:bg-slate-950/90 dark:shadow-slate-800/60 sm:p-10">
-        <div className="text-right">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">השיטה שלנו</p>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
-            כל גליון מתמקד בהשראה קצרה, בהקשר צדיקי ובהקפדה על תוכן אמין ונעים לקריאה.
-          </p>
+
+      {/* CTA Banner */}
+      <Link
+        to="/today"
+        className="flex items-center justify-between rounded-2xl bg-cream border border-gray-light px-5 py-4 shadow-sm hover:bg-cream-dark transition active:scale-[0.99]"
+      >
+        <div>
+          <p className="font-bold text-navy text-base">קדושים בכל יום</p>
+          <p className="text-sm text-navy/50 mt-0.5">הכנסו לגליון של היום</p>
         </div>
-        <Methodology />
+        <span className="text-2xl text-gold">←</span>
+      </Link>
+
+      {/* About section */}
+      <section className="rounded-2xl bg-white border border-gray-light px-5 py-6 shadow-sm">
+        <p className="text-xs font-semibold text-gold uppercase tracking-widest mb-3">אודות</p>
+        <h2 className="font-heading text-xl font-black text-navy leading-snug mb-4">
+          למה דובב שפתי ישנים?
+        </h2>
+        <p className="text-sm leading-7 text-text/70">
+          בכל יום נפטרו צדיקים, רבנים וגדולי ישראל שהאירו את העולם בתורתם, במעשיהם ובמידותיהם.
+        </p>
+        <p className="text-sm leading-7 text-text/70 mt-3">
+          מטרת האתר היא לדובב שפתי ישנים — להנגיש בכל יום מסר קצר, סיפור ותורה מבעלי ההילולה של אותו היום.
+        </p>
+        <p className="text-sm leading-7 text-text/70 mt-3">
+          כך יכול כל יהודי להתחבר מדי יום למסורת ישראל, לחכמת הדורות ולצדיקי האמת.
+        </p>
+
+        {/* Values */}
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          {[
+            { icon: '📜', title: 'מקור מאומת', desc: 'רק ממקורות אמינים' },
+            { icon: '✍️', title: 'כתיבה אנושית', desc: 'לא תוכן אוטומטי' },
+            { icon: '✅', title: 'אישור עורך', desc: 'כל תוכן עבר בדיקה' },
+          ].map(({ icon, title, desc }) => (
+            <div key={title} className="text-center p-3 rounded-xl bg-cream/60">
+              <span className="text-xl">{icon}</span>
+              <p className="text-xs font-bold text-navy mt-1.5 leading-tight">{title}</p>
+              <p className="text-xs text-navy/40 mt-0.5">{desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
+
+      {/* Subscribe */}
       <SubscribeForm />
     </div>
   )

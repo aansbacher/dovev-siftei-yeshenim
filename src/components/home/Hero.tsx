@@ -1,34 +1,64 @@
 import { Link } from 'react-router-dom'
-import { Mail, Sparkles } from 'lucide-react'
+import { getHebrewDate } from '../../lib/hebrewDate'
 
 export function Hero() {
+  const { hebrewDateDisplay, parasha, gregorianDate, specialDays } = getHebrewDate(new Date())
+  const formattedDate = gregorianDate.toLocaleDateString('he-IL', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  })
+
   return (
-    <section className="rounded-[2rem] bg-white/90 p-6 shadow-lg shadow-slate-200/70 ring-1 ring-slate-200 dark:bg-slate-900/95 dark:ring-slate-800 sm:p-10">
-      <div className="flex flex-col gap-8 text-center rtl:text-right">
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-8 shadow-lg sm:px-8 sm:py-10">
+      {/* Decorative background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+        <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/[0.03]" />
+        <div className="absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-white/[0.03]" />
+      </div>
+
+      <div className="relative space-y-6">
+        {/* Date area */}
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-200">
-            <Sparkles className="h-4 w-4" /> גליון יומי של השראה
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-xs text-cream/40">{formattedDate}</span>
+            {specialDays.map((sd, i) => (
+              <span key={i} className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/30">
+                {sd.label}
+              </span>
+            ))}
+          </div>
+          <p className="font-heading text-3xl font-black text-cream leading-none sm:text-4xl">
+            {hebrewDateDisplay}
           </p>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+          {parasha && (
+            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold text-gold">
+              פרשת {parasha.replace('פרשת ', '')}
+            </span>
+          )}
+        </div>
+
+        {/* Copy */}
+        <div>
+          <h1 className="font-heading text-2xl font-black text-cream leading-snug sm:text-3xl">
             דובב שפתי ישנים
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-slate-600 dark:text-slate-300">
-            סיפור אחד. וורט אחד. רגע של השראה בכל יום.
+          <p className="mt-2 text-sm text-cream/60 leading-relaxed max-w-sm">
+            סיפור אחד. וורט אחד. רגע של השראה מצדיקי ישראל — בכל יום.
           </p>
         </div>
-        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-center">
+
+        {/* CTAs */}
+        <div className="flex flex-wrap gap-3">
           <Link
             to="/today"
-            className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+            className="inline-flex items-center justify-center rounded-full bg-gold px-6 py-3 text-sm font-bold text-navy shadow-sm transition hover:bg-gold-light active:scale-95"
           >
-            כניסה לגליון
+            לגליון של היום
           </Link>
           <a
             href="#subscribe"
-            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+            className="inline-flex items-center justify-center rounded-full border border-cream/20 px-6 py-3 text-sm font-semibold text-cream/80 transition hover:border-cream/40 hover:text-cream active:scale-95"
           >
-            <Mail className="ml-2 h-4 w-4" />
-            הירשם לדיוור יומי
+            הירשם לעדכונים
           </a>
         </div>
       </div>

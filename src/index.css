@@ -1,12 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Heebo:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
-  font-family: 'Rubik', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -21,17 +20,12 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: #f8f5ef;
-  color: #0f172a;
+  background: #FCFAF5;
+  color: #1F1F1F;
   overflow-x: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Heebo', sans-serif;
 }
 
@@ -41,4 +35,13 @@ h6 {
 
 #root {
   min-height: 100vh;
+}
+
+/* Smooth bottom sheet transition */
+.sheet-enter {
+  transform: translateY(100%);
+}
+.sheet-enter-done {
+  transform: translateY(0);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }

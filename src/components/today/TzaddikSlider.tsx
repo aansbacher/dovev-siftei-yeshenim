@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { TzaddikCard } from './TzaddikCard'
 
@@ -24,7 +23,6 @@ export function TzaddikSlider({ tzaddikim }: TzaddikSliderProps) {
     if (startX.current === null) return
     const dx = startX.current - e.changedTouches[0].clientX
     if (Math.abs(dx) > MIN_SWIPE) {
-      // RTL: swipe left (dx>0) = next card, swipe right (dx<0) = prev card
       if (dx > 0) goTo(current + 1)
       else goTo(current - 1)
     }
@@ -32,11 +30,13 @@ export function TzaddikSlider({ tzaddikim }: TzaddikSliderProps) {
   }
 
   if (!tzaddikim.length) return null
-  if (tzaddikim.length === 1) return <TzaddikCard tzaddik={tzaddikim[0]} />
+  if (tzaddikim.length === 1) {
+    return <TzaddikCard tzaddik={tzaddikim[0]} variant="mini" />
+  }
 
   return (
-    <div className="relative select-none">
-      {/* Track */}
+    <div className="select-none">
+      {/* Track — 80% card width, shows peek of next card */}
       <div
         className="overflow-hidden"
         dir="ltr"
@@ -44,60 +44,34 @@ export function TzaddikSlider({ tzaddikim }: TzaddikSliderProps) {
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="flex transition-transform duration-300 ease-out will-change-transform"
+          className="flex gap-3 transition-transform duration-300 ease-out will-change-transform"
           style={{
-            width: `${tzaddikim.length * 100}%`,
-            transform: `translateX(${-(current * 100) / tzaddikim.length}%)`,
+            transform: `translateX(calc(${current * -80}% - ${current * 12}px))`,
           }}
         >
           {tzaddikim.map((tz) => (
-            <div key={tz.id} dir="rtl" style={{ width: `${100 / tzaddikim.length}%` }}>
-              <TzaddikCard tzaddik={tz} />
+            <div key={tz.id} dir="rtl" className="flex-shrink-0 w-[80%]">
+              <TzaddikCard tzaddik={tz} variant="mini" />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="mt-4 flex items-center justify-center gap-3">
-        {/* In RTL context: right chevron = previous, left chevron = next */}
-        <button
-          onClick={() => goTo(current - 1)}
-          disabled={current === 0}
-          aria-label="הקודם"
-          className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-
-        <div className="flex gap-1.5">
+      {/* Dot indicators */}
+      {tzaddikim.length > 1 && (
+        <div className="mt-3 flex items-center justify-center gap-1.5">
           {tzaddikim.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
               aria-label={`צדיק ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === current
-                  ? 'w-6 bg-indigo-600'
-                  : 'w-2 bg-slate-300 dark:bg-slate-600'
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === current ? 'w-5 bg-gold' : 'w-1.5 bg-gray-light'
               }`}
             />
           ))}
         </div>
-
-        <button
-          onClick={() => goTo(current + 1)}
-          disabled={current === tzaddikim.length - 1}
-          aria-label="הבא"
-          className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-      </div>
-
-      <p className="mt-1 text-center text-xs text-slate-400">
-        {current + 1} מתוך {tzaddikim.length}
-      </p>
+      )}
     </div>
   )
 }
