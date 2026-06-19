@@ -196,26 +196,27 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
       <article dir="rtl" className="overflow-hidden rounded-2xl bg-white border border-gray-light shadow-sm">
         {/* ── Hero image ── */}
         <div className="relative">
-          {/* Responsive image wrapper: portrait on mobile, landscape on desktop */}
-          <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/5' }}>
-            {tzaddik.imageUrl ? (
-              <img
-                src={tzaddik.imageUrl}
-                alt={tzaddik.popularName}
-                className="absolute inset-0 w-full h-full object-cover object-top"
-                loading="lazy"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-navy to-navy-light">
-                <div className="text-center">
-                  <span className="font-heading text-8xl font-black text-white/10 block">
-                    {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
-                  </span>
-                  <p className="text-white/20 text-xs mt-4">תמונה אותנטית טרם נמצאה</p>
-                </div>
+          {tzaddik.imageUrl ? (
+            <img
+              src={tzaddik.imageUrl}
+              alt={tzaddik.popularName}
+              className="w-full object-cover object-top block"
+              style={{ aspectRatio: '4/5' }}
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light"
+              style={{ aspectRatio: '4/5' }}
+            >
+              <div className="text-center">
+                <span className="font-heading text-8xl font-black text-white/10 block">
+                  {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
+                </span>
+                <p className="text-white/20 text-xs mt-4">תמונה אותנטית טרם נמצאה</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Bottom gradient overlay */}
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
