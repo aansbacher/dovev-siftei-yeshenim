@@ -135,6 +135,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
   const [liked, setLiked] = useState(() => getLiked().has(tzaddik.id))
   const [copied, setCopied] = useState(false)
   const [deepenOpen, setDeepenOpen] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
@@ -147,13 +148,14 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
       <article className="overflow-hidden rounded-2xl bg-white border border-gray-light shadow-sm flex flex-col h-full">
         {/* Image */}
         <div className="relative flex-shrink-0">
-          {tzaddik.imageUrl ? (
+          {tzaddik.imageUrl && !imgError ? (
             <img
               src={tzaddik.imageUrl}
               alt={tzaddik.popularName}
               className="w-full object-cover object-top"
               style={{ aspectRatio: '4/3' }}
               loading="lazy"
+              onError={() => setImgError(true)}
             />
           ) : (
             <div
@@ -196,24 +198,21 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
       <article dir="rtl" className="overflow-hidden rounded-2xl bg-white border border-gray-light shadow-sm">
         {/* ── Hero image ── */}
         <div className="relative">
-          {tzaddik.imageUrl ? (
+          {tzaddik.imageUrl && !imgError ? (
             <img
               src={tzaddik.imageUrl}
               alt={tzaddik.popularName}
-              className="w-full object-cover object-top block"
-              style={{ aspectRatio: '4/5' }}
+              className="w-full object-cover object-top block aspect-video sm:aspect-[4/5]"
               loading="lazy"
+              onError={() => setImgError(true)}
             />
           ) : (
-            <div
-              className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light"
-              style={{ aspectRatio: '4/5' }}
-            >
+            <div className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light aspect-video sm:aspect-[4/5]">
               <div className="text-center">
-                <span className="font-heading text-8xl font-black text-white/10 block">
+                <span className="font-heading text-7xl font-black text-white/10 block">
                   {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
                 </span>
-                <p className="text-white/20 text-xs mt-4">תמונה אותנטית טרם נמצאה</p>
+                <p className="text-white/20 text-xs mt-3">תמונה אותנטית טרם נמצאה</p>
               </div>
             </div>
           )}
