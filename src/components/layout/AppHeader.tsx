@@ -14,7 +14,7 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-navy border-b border-navy-light/40 shadow-sm">
+      <header className="sticky top-0 z-40 bg-navy border-b border-navy-light/40 shadow-sm" style={{ backgroundColor: '#1E2A38' }}>
         <div className="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
           <Link
             to="/"

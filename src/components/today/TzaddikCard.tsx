@@ -54,10 +54,10 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
     <div className="space-y-6" dir="rtl">
       {/* Message */}
       {tzaddik.quote && (
-        <div className="bg-navy rounded-2xl px-5 py-4">
-          <p className="text-xs font-semibold text-gold/80 mb-2 uppercase tracking-wider">מסר לחיים</p>
+        <div className="bg-navy rounded-2xl px-5 py-4" style={{ backgroundColor: '#1E2A38', color: '#F7F3EA' }}>
+          <p className="text-xs font-semibold text-gold/80 mb-2 uppercase tracking-wider" style={{ color: '#B89552' }}>מסר לחיים</p>
           <p className="text-cream font-semibold leading-7 text-sm">"{tzaddik.quote}"</p>
-          <p className="text-cream/40 text-xs mt-2 text-left">— {tzaddik.popularName}</p>
+          <p className="text-cream/40 text-xs mt-2 text-left" style={{ color: 'rgba(247,243,234,0.4)' }}>— {tzaddik.popularName}</p>
         </div>
       )}
 
@@ -160,9 +160,9 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
           ) : (
             <div
               className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light"
-              style={{ aspectRatio: '4/3' }}
+              style={{ aspectRatio: '4/3', background: 'linear-gradient(135deg, #1E2A38 0%, #2C3E52 100%)' }}
             >
-              <span className="font-heading text-5xl font-black text-white/15">
+              <span className="font-heading text-5xl font-black text-white/15" style={{ color: 'rgba(255,255,255,0.15)' }}>
                 {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
               </span>
             </div>
@@ -207,12 +207,15 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light aspect-video sm:aspect-[4/5]">
+            <div
+              className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light aspect-video sm:aspect-[4/5]"
+              style={{ background: 'linear-gradient(135deg, #1E2A38 0%, #2C3E52 100%)' }}
+            >
               <div className="text-center">
-                <span className="font-heading text-7xl font-black text-white/10 block">
+                <span className="font-heading text-7xl font-black text-white/10 block" style={{ color: 'rgba(255,255,255,0.1)' }}>
                   {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
                 </span>
-                <p className="text-white/20 text-xs mt-3">תמונה אותנטית טרם נמצאה</p>
+                <p className="text-white/20 text-xs mt-3" style={{ color: 'rgba(255,255,255,0.2)' }}>תמונה אותנטית טרם נמצאה</p>
               </div>
             </div>
           )}

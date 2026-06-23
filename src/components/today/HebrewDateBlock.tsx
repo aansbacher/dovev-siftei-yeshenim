@@ -30,7 +30,7 @@ export function HebrewDateBlock({
   })
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 pt-5 pb-6 shadow-lg">
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 pt-5 pb-6 shadow-lg" style={{ backgroundColor: '#1E2A38', color: '#F7F3EA' }}>
       {/* Subtle decorative element */}
       <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden rounded-2xl">
         <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-white/[0.03]" />

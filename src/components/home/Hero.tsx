@@ -8,7 +8,7 @@ export function Hero() {
   })
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-8 shadow-lg sm:px-8 sm:py-10">
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-8 shadow-lg sm:px-8 sm:py-10" style={{ backgroundColor: '#1E2A38', color: '#F7F3EA' }}>
       {/* Decorative background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
         <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/[0.03]" />
