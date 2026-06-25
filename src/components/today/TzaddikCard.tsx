@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { Heart, Share2, Copy, BookOpen } from 'lucide-react'
+import { Heart, Share2, Copy, BookOpen, Send, Loader2 } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
 
@@ -39,6 +39,75 @@ async function copyTzaddik(tzaddik: Tzaddik) {
 interface TzaddikCardProps {
   tzaddik: Tzaddik
   variant?: 'main' | 'mini'
+}
+
+// ── AI Ask box ─────────────────────────────────────────────────────────────
+
+const tabPlaceholders: Record<string, string> = {
+  teaching: 'שאל על תורתו, ספריו, אמרותיו...',
+  story:    'שאל על סיפור מחייו...',
+  bio:      'שאל על ביוגרפיה, תפקידים, משפחה...',
+}
+
+function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string }) {
+  const [query, setQuery] = useState('')
+  const [answer, setAnswer] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const ask = async () => {
+    if (!query.trim() || loading) return
+    setLoading(true)
+    setAnswer('')
+    setError('')
+    try {
+      const res = await fetch('/api/chat-tzaddik', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tzaddikName, query: query.trim(), tabType }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setAnswer(data.answer)
+    } catch (e: any) {
+      setError(e.message ?? 'שגיאה. נסה שוב.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="mt-4 pt-3 border-t border-gray-light">
+      <p className="text-[11px] font-semibold text-navy/30 uppercase tracking-widest mb-2">שאל שאלה</p>
+      <div className="flex gap-2">
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && ask()}
+          placeholder={tabPlaceholders[tabType] ?? 'שאל שאלה...'}
+          className="flex-1 text-sm rounded-xl border border-gray-light bg-cream px-3 py-2 text-navy placeholder-navy/30 outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/20 transition"
+          style={{ backgroundColor: '#F7F3EA' }}
+          dir="rtl"
+        />
+        <button
+          onClick={ask}
+          disabled={!query.trim() || loading}
+          className="flex items-center justify-center w-9 h-9 rounded-xl bg-navy text-cream disabled:opacity-40 transition active:scale-95 flex-shrink-0"
+          style={{ backgroundColor: '#1E2A38' }}
+        >
+          {loading
+            ? <Loader2 className="h-4 w-4 animate-spin" />
+            : <Send className="h-4 w-4" />}
+        </button>
+      </div>
+      {answer && (
+        <div className="mt-3 rounded-xl bg-cream px-3 py-3 text-sm leading-7 text-navy/80 whitespace-pre-wrap" style={{ backgroundColor: '#F7F3EA' }} dir="rtl">
+          {answer}
+        </div>
+      )}
+      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+    </div>
+  )
 }
 
 // ── Main full card ──────────────────────────────────────────────────────────
@@ -136,6 +205,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
   const [copied, setCopied] = useState(false)
   const [deepenOpen, setDeepenOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [activeTab, setActiveTab] = useState('teaching')
 
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
@@ -261,7 +331,11 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
           )}
 
           {/* Tabs */}
-          <TabsPrimitive.Root defaultValue="teaching" dir="rtl">
+          <TabsPrimitive.Root
+            value={activeTab}
+            onValueChange={setActiveTab}
+            dir="rtl"
+          >
             <TabsPrimitive.List className="flex border-b border-gray-light">
               {TABS.map(({ value, label }) => (
                 <TabsPrimitive.Trigger
@@ -287,6 +361,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
                   {content
                     ? <p className="whitespace-pre-wrap">{content}</p>
                     : <span className="italic text-navy/30">{empty}</span>}
+                  <AskBox tzaddikName={tzaddik.popularName} tabType={value} />
                 </TabsPrimitive.Content>
               )
             })}
