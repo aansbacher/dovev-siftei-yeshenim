@@ -3,8 +3,9 @@ import { AppHeader } from './components/layout/AppHeader'
 import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
 import { Today } from './pages/Today'
+import { Admin } from './pages/Admin'
 
-function App() {
+function AppLayout() {
   return (
     <div className="min-h-screen bg-bg text-text">
       <AppHeader />
@@ -16,6 +17,15 @@ function App() {
       </main>
       <Footer />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/admin" element={<Admin />} />
+      <Route path="*" element={<AppLayout />} />
+    </Routes>
   )
 }
 
