@@ -12,7 +12,11 @@ export default async function handler(req: any, res: any) {
 
   const { password, id, fields, checkOnly } = req.body ?? {}
 
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
+  const envPw = process.env.ADMIN_PASSWORD
+  if (!envPw) {
+    return res.status(401).json({ error: 'ADMIN_PASSWORD env var not set on server' })
+  }
+  if (!password || password !== envPw) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
