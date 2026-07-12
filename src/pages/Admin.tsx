@@ -148,17 +148,20 @@ export function Admin() {
     setUploading(false)
   }
 
+  function itemStyle(active: boolean): React.CSSProperties {
+    return {
+      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px',
+      cursor: 'pointer', borderBottom: '1px solid #f0f4f8',
+      backgroundColor: active ? '#ebf4ff' : 'transparent',
+    }
+  }
+
   const s: Record<string, React.CSSProperties> = {
     root: { display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif', direction: 'rtl' as const },
     sidebar: { width: 300, flexShrink: 0, borderLeft: '1px solid #e2e8f0', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' as const },
     searchWrap: { padding: 12, borderBottom: '1px solid #e2e8f0' },
     searchInput: { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #cbd5e0', fontSize: 14, boxSizing: 'border-box' as const, outline: 'none' },
     list: { flex: 1, overflowY: 'auto' as const },
-    item: (active: boolean): React.CSSProperties => ({
-      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px',
-      cursor: 'pointer', borderBottom: '1px solid #f0f4f8',
-      backgroundColor: active ? '#ebf4ff' : 'transparent',
-    }),
     thumb: { width: 40, height: 40, borderRadius: 6, objectFit: 'cover' as const, flexShrink: 0, backgroundColor: '#e2e8f0' },
     itemName: { fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' },
     itemMeta: { fontSize: 11, color: '#718096' },
@@ -214,7 +217,7 @@ export function Admin() {
         <div style={s.list}>
           {loading && <div style={{ padding: 16, color: '#a0aec0', fontSize: 13 }}>טוען...</div>}
           {tzaddikim.map(t => (
-            <div key={t.id} onClick={() => select(t)} style={s.item(selected?.id === t.id)}>
+            <div key={t.id} onClick={() => select(t)} style={itemStyle(selected?.id === t.id)}>
               <img
                 src={t.image_url ?? ''}
                 alt=""
