@@ -38,76 +38,76 @@ export function SubscribeForm() {
   }
 
   return (
-    <section id="subscribe" className="rounded-2xl bg-navy px-5 py-6 shadow-sm">
-      <p className="text-xs font-semibold text-gold/80 uppercase tracking-widest mb-1">הירשם</p>
-      <h2 className="font-heading text-lg font-bold text-cream mb-1">
-        קבל את דברי הצדיקים בכל יום
-      </h2>
-      <p className="text-sm text-cream/50 mb-5">ישירות למייל או לוואטסאפ</p>
+    <section
+      id="subscribe"
+      className="dsy-card relative overflow-hidden rounded-md bg-surface border border-rule shadow-[0_18px_40px_-30px_var(--shadow)] px-5 py-8 sm:px-8 text-center"
+    >
+      <span className="dsy-cor tl" /><span className="dsy-cor tr" /><span className="dsy-cor bl" /><span className="dsy-cor br" />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-xs font-semibold text-cream/60 mb-1.5">אימייל</label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={e => setForm({ ...form, email: e.target.value })}
-            placeholder="your@email.com"
-            className="w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-sm text-cream placeholder-cream/30 outline-none transition focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
-            dir="ltr"
-          />
-        </div>
+      <div className="relative z-[1] max-w-lg mx-auto">
+        <div className="text-[11px] tracking-[3px] font-bold text-gold mb-2">הִצְטָרְפוּ</div>
+        <h2 className="font-display font-bold text-ink text-2xl sm:text-[25px] mb-1.5">
+          קבלו את גיליון הצדיקים מדי יום
+        </h2>
+        <p className="text-[13px] text-muted mb-5">
+          מסר קצר, סיפור ותורה מבעלי ההילולה, ישירות למייל או לוואטסאפ.
+        </p>
 
-        <div>
-          <label className="block text-xs font-semibold text-cream/60 mb-1.5">
-            טלפון וואטסאפ <span className="font-normal opacity-60">(אופציונלי)</span>
-          </label>
-          <input
-            type="tel"
-            value={form.phone}
-            onChange={e => setForm({ ...form, phone: e.target.value })}
-            placeholder="+972 50 123 4567"
-            className="w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-sm text-cream placeholder-cream/30 outline-none transition focus:border-gold/50 focus:ring-2 focus:ring-gold/20"
-            dir="ltr"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              placeholder="כתובת אימייל"
+              className="flex-1 rounded-lg bg-surface-2 border border-rule px-4 py-3 text-sm text-ink placeholder:text-muted outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15"
+              dir="rtl"
+            />
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={e => setForm({ ...form, phone: e.target.value })}
+              placeholder="וואטסאפ (אופציונלי)"
+              className="flex-1 rounded-lg bg-surface-2 border border-rule px-4 py-3 text-sm text-ink placeholder:text-muted outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15"
+              dir="rtl"
+            />
+          </div>
 
-        {/* Delivery method toggles */}
-        <div className="flex gap-3">
-          {[
-            { key: 'viaEmail' as const, label: '📧 מייל' },
-            { key: 'viaWhatsapp' as const, label: '💬 וואטסאפ' },
-          ].map(({ key, label }) => (
+          <div className="flex items-center justify-center gap-2">
+            {[
+              { key: 'viaEmail' as const, label: '📧 מייל' },
+              { key: 'viaWhatsapp' as const, label: '💬 וואטסאפ' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setForm({ ...form, [key]: !form[key] })}
+                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition border ${
+                  form[key]
+                    ? 'bg-gold text-white border-gold'
+                    : 'bg-surface-2 text-ink-soft border-rule hover:border-gold/50'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
             <button
-              key={key}
-              type="button"
-              onClick={() => setForm({ ...form, [key]: !form[key] })}
-              className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition ${
-                form[key]
-                  ? 'bg-gold text-navy'
-                  : 'bg-white/10 text-cream/50 hover:bg-white/15'
-              }`}
+              type="submit"
+              disabled={mutation.isPending}
+              className="rounded-full bg-ink text-ground px-7 py-2 text-sm font-bold transition hover:opacity-90 disabled:opacity-60 active:scale-[0.99]"
             >
-              {label}
+              {mutation.isPending ? 'שולח...' : 'הרשמה'}
             </button>
-          ))}
-        </div>
+          </div>
 
-        <button
-          type="submit"
-          disabled={mutation.isPending}
-          className="w-full rounded-xl bg-gold py-3.5 text-sm font-bold text-navy transition hover:bg-gold-light disabled:opacity-60 active:scale-[0.99]"
-        >
-          {mutation.isPending ? 'שולח...' : 'הרשמה'}
-        </button>
-
-        {message && (
-          <p className={`text-sm text-center ${message.includes('תודה') ? 'text-success' : 'text-red-400'}`}>
-            {message}
-          </p>
-        )}
-      </form>
+          {message && (
+            <p className={`text-sm ${message.includes('תודה') ? 'text-success' : 'text-red-500'}`}>
+              {message}
+            </p>
+          )}
+        </form>
+      </div>
     </section>
   )
 }

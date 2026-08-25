@@ -215,42 +215,39 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
 
   if (variant === 'mini') {
     return (
-      <article className="overflow-hidden rounded-2xl bg-white border border-gray-light shadow-sm flex flex-col h-full">
-        {/* Image */}
-        <div className="relative flex-shrink-0">
-          {tzaddik.imageUrl && !imgError ? (
-            <img
-              src={tzaddik.imageUrl}
-              alt={tzaddik.popularName}
-              className="w-full object-cover object-top"
-              style={{ aspectRatio: '4/3' }}
-              loading="lazy"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div
-              className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light"
-              style={{ aspectRatio: '4/3', background: 'linear-gradient(135deg, #1E2A38 0%, #2C3E52 100%)' }}
-            >
-              <span className="font-heading text-5xl font-black text-white/15" style={{ color: 'rgba(255,255,255,0.15)' }}>
-                {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
-              </span>
-            </div>
-          )}
-        </div>
-        {/* Content */}
-        <div className="p-3 flex flex-col flex-1 gap-1.5">
-          <p className="font-heading text-sm font-bold text-navy leading-tight line-clamp-1">{tzaddik.popularName}</p>
-          {tzaddik.biography && (
-            <p className="text-xs text-text/60 leading-relaxed line-clamp-2">{tzaddik.biography}</p>
-          )}
-          <button
-            onClick={() => setDeepenOpen(true)}
-            className="mt-auto text-xs font-semibold text-gold hover:text-gold-dark transition"
-          >
-            קרא עוד ←
-          </button>
-        </div>
+      <>
+        <article
+          onClick={() => setDeepenOpen(true)}
+          className="relative flex gap-3 items-center bg-surface border border-rule rounded-md p-2.5 h-full cursor-pointer transition hover:border-gold/50"
+        >
+          {/* gold accent bar (start / right in RTL) */}
+          <span className="absolute top-0 bottom-0 right-0 w-[3px] bg-gold/50 rounded-r-md" />
+          {/* thumbnail */}
+          <div className="shrink-0 w-[50px] h-[62px] rounded-[2px] border border-[color:var(--line)] bg-surface-2 overflow-hidden">
+            {tzaddik.imageUrl && !imgError ? (
+              <img
+                src={tzaddik.imageUrl}
+                alt={tzaddik.popularName}
+                className="w-full h-full object-cover object-top block"
+                loading="lazy"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-navy">
+                <span className="font-display text-xl text-white/15">
+                  {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
+                </span>
+              </div>
+            )}
+          </div>
+          {/* text */}
+          <div className="min-w-0">
+            <div className="font-display font-bold text-[16px] text-ink leading-tight line-clamp-1">{tzaddik.popularName}</div>
+            {tzaddik.biography && (
+              <div className="text-[12.5px] text-muted mt-0.5 leading-snug line-clamp-2">{tzaddik.biography}</div>
+            )}
+          </div>
+        </article>
 
         <BottomSheet
           isOpen={deepenOpen}
@@ -259,152 +256,120 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
         >
           <DeepenSheet tzaddik={tzaddik} />
         </BottomSheet>
-      </article>
+      </>
     )
   }
 
+  const subline = [tzaddik.stream, tzaddik.role, tzaddik.years].filter(Boolean).join(' · ')
+
   return (
     <>
-      <article dir="rtl" className="overflow-hidden rounded-2xl bg-white border border-gray-light shadow-sm">
-        {/* ── Hero image ── */}
-        <div className="relative">
-          {tzaddik.imageUrl && !imgError ? (
-            <img
-              src={tzaddik.imageUrl}
-              alt={tzaddik.popularName}
-              className="w-full object-cover object-top block aspect-video sm:aspect-[4/5]"
-              loading="lazy"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div
-              className="w-full flex items-center justify-center bg-gradient-to-br from-navy to-navy-light aspect-video sm:aspect-[4/5]"
-              style={{ background: 'linear-gradient(135deg, #1E2A38 0%, #2C3E52 100%)' }}
-            >
-              <div className="text-center">
-                <span className="font-heading text-7xl font-black text-white/10 block" style={{ color: 'rgba(255,255,255,0.1)' }}>
+      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-md bg-surface border border-rule shadow-[0_18px_40px_-30px_var(--shadow)] p-5 sm:p-8">
+        <span className="dsy-cor tl" /><span className="dsy-cor tr" /><span className="dsy-cor bl" /><span className="dsy-cor br" />
+
+        {/* ── Head: framed portrait + name ── */}
+        <div className="relative z-[1] flex gap-4 sm:gap-5 items-center">
+          <div className="shrink-0 w-[100px] h-[126px] sm:w-[104px] sm:h-[130px] rounded-[3px] border border-gold p-1 bg-surface-2 overflow-hidden shadow-[0_8px_20px_-12px_var(--shadow)]">
+            {tzaddik.imageUrl && !imgError ? (
+              <img
+                src={tzaddik.imageUrl}
+                alt={tzaddik.popularName}
+                className="w-full h-full object-cover object-top rounded-[2px] block"
+                loading="lazy"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="w-full h-full rounded-[2px] flex items-center justify-center bg-navy">
+                <span className="font-display text-3xl text-white/15">
                   {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
                 </span>
-                <p className="text-white/20 text-xs mt-3" style={{ color: 'rgba(255,255,255,0.2)' }}>תמונה אותנטית טרם נמצאה</p>
               </div>
-            </div>
-          )}
-
-          {/* Bottom gradient overlay */}
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-          {/* Name overlay */}
-          <div className="absolute inset-x-0 bottom-0 p-5">
-            {tzaddik.stream || tzaddik.role ? (
-              <div className="flex gap-1.5 mb-2">
-                {tzaddik.stream && (
-                  <span className="text-xs bg-white/15 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full font-medium">
-                    {tzaddik.stream}
-                  </span>
-                )}
-                {tzaddik.role && (
-                  <span className="text-xs bg-white/15 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full font-medium">
-                    {tzaddik.role}
-                  </span>
-                )}
-              </div>
-            ) : null}
-            <h2 className="font-heading text-2xl font-black text-white leading-tight sm:text-3xl">
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] font-bold tracking-[3px] text-gold mb-1.5">בעל ההילולה</div>
+            <h2 className="font-display font-bold text-2xl sm:text-[31px] leading-tight text-ink text-balance">
               {tzaddik.popularName}
             </h2>
-            {tzaddik.fullName && (
-              <p className="text-white/60 text-sm mt-0.5">{tzaddik.fullName}</p>
-            )}
-            {tzaddik.years && (
-              <p className="text-white/40 text-xs mt-0.5">{tzaddik.years}</p>
-            )}
+            {subline && <div className="mt-1.5 text-[13px] text-muted">{subline}</div>}
           </div>
         </div>
 
-        {/* ── Body ── */}
-        <div className="px-4 pt-4 pb-5 space-y-4">
-          {/* Quote */}
-          {tzaddik.quote && (
-            <div className="border-r-4 border-gold pr-4 py-1">
-              <p className="text-sm font-semibold leading-7 text-navy">{tzaddik.quote}</p>
-            </div>
-          )}
-
-          {/* Tabs */}
-          <TabsPrimitive.Root
-            value={activeTab}
-            onValueChange={setActiveTab}
-            dir="rtl"
-          >
-            <TabsPrimitive.List className="flex border-b border-gray-light">
-              {TABS.map(({ value, label }) => (
-                <TabsPrimitive.Trigger
-                  key={value}
-                  value={value}
-                  className="flex-1 py-3 text-sm font-semibold text-navy/40 transition
-                    data-[state=active]:border-b-2 data-[state=active]:border-gold
-                    data-[state=active]:text-navy"
-                >
-                  {label}
-                </TabsPrimitive.Trigger>
-              ))}
-            </TabsPrimitive.List>
-
-            {TABS.map(({ value, key, empty }) => {
-              const content = tzaddik[key]
-              return (
-                <TabsPrimitive.Content
-                  key={value}
-                  value={value}
-                  className="pt-3 min-h-[5rem] text-sm leading-7 text-text/75"
-                >
-                  {content
-                    ? <p className="whitespace-pre-wrap">{content}</p>
-                    : <span className="italic text-navy/30">{empty}</span>}
-                  <AskBox tzaddikName={tzaddik.popularName} tabType={value} />
-                </TabsPrimitive.Content>
-              )
-            })}
-          </TabsPrimitive.Root>
-
-          {/* Actions */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-light">
-            <button
-              onClick={() => setLiked(toggleLiked(tzaddik.id))}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition ${
-                liked
-                  ? 'bg-navy text-cream'
-                  : 'border border-gray-light text-navy/50 hover:border-navy/30 hover:text-navy'
-              }`}
-            >
-              <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
-              קראתי
-            </button>
-
-            <button
-              onClick={() => shareTzaddik(tzaddik)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-light text-navy/50 text-sm font-semibold hover:border-navy/30 hover:text-navy transition"
-            >
-              <Share2 className="h-4 w-4" />
-              שתף
-            </button>
-
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-light text-navy/50 text-sm font-semibold hover:border-navy/30 hover:text-navy transition"
-            >
-              <Copy className="h-4 w-4" />
-              {copied ? 'הועתק ✓' : 'העתק'}
-            </button>
-
-            <button
-              onClick={() => setDeepenOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-cream border border-gray-light text-navy text-sm font-semibold hover:bg-cream-dark transition mr-auto"
-            >
-              <BookOpen className="h-4 w-4 text-gold" />
-              העמק בצדיק
-            </button>
+        {/* ── Pull-quote ── */}
+        {tzaddik.quote && (
+          <div className="dsy-pull mt-6 mb-0.5">
+            <span className="qm">״</span>
+            <p className="font-display font-medium text-lg sm:text-[22px] leading-[1.75] text-ink text-pretty">
+              {tzaddik.quote}
+            </p>
           </div>
+        )}
+
+        {/* ── Tabs ── */}
+        <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab} dir="rtl" className="mt-7">
+          <TabsPrimitive.List className="flex border-b border-rule">
+            {TABS.map(({ value, label }) => (
+              <TabsPrimitive.Trigger
+                key={value}
+                value={value}
+                className="flex-1 py-3 font-display text-base font-semibold text-ink-soft transition
+                  data-[state=active]:border-b-2 data-[state=active]:border-gold
+                  data-[state=active]:text-ink"
+              >
+                {label}
+              </TabsPrimitive.Trigger>
+            ))}
+          </TabsPrimitive.List>
+
+          {TABS.map(({ value, key, empty }) => {
+            const content = tzaddik[key]
+            return (
+              <TabsPrimitive.Content
+                key={value}
+                value={value}
+                className="pt-4 min-h-[5rem] text-[15px] leading-[1.85] text-ink-soft"
+              >
+                {content
+                  ? <p className="whitespace-pre-wrap">{content}</p>
+                  : <span className="italic text-muted">{empty}</span>}
+                <AskBox tzaddikName={tzaddik.popularName} tabType={value} />
+              </TabsPrimitive.Content>
+            )
+          })}
+        </TabsPrimitive.Root>
+
+        {/* ── Actions ── */}
+        <div className="flex flex-wrap items-center gap-2 mt-6">
+          <button
+            onClick={() => setDeepenOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-ink text-ground text-[13.5px] font-semibold hover:opacity-90 transition"
+          >
+            <BookOpen className="h-4 w-4" />
+            העמק בצדיק
+          </button>
+          <button
+            onClick={() => shareTzaddik(tzaddik)}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition"
+          >
+            <Share2 className="h-4 w-4 text-ink-soft" />
+            שתף
+          </button>
+          <button
+            onClick={() => setLiked(toggleLiked(tzaddik.id))}
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[13.5px] font-semibold transition border ${
+              liked ? 'bg-gold text-white border-gold' : 'border-rule bg-surface-2 text-ink hover:border-gold/50'
+            }`}
+          >
+            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : 'text-ink-soft'}`} />
+            {liked ? 'נשמר' : 'שמירה'}
+          </button>
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition mr-auto"
+          >
+            <Copy className="h-4 w-4 text-ink-soft" />
+            {copied ? 'הועתק ✓' : 'העתק'}
+          </button>
         </div>
       </article>
 

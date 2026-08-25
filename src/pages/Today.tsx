@@ -8,6 +8,7 @@ import { HebrewDateBlock } from '../components/today/HebrewDateBlock'
 import { TzaddikCard } from '../components/today/TzaddikCard'
 import { TzaddikSlider } from '../components/today/TzaddikSlider'
 import { DayNavigator } from '../components/today/DayNavigator'
+import { HebrewCalendar } from '../components/today/HebrewCalendar'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
 
 export function Today() {
@@ -24,16 +25,16 @@ export function Today() {
   const [mainTzaddik, ...restTzaddikim] = tzaddikim
 
   const emptyState = (
-    <div className="rounded-2xl border border-gray-light bg-white p-10 text-center">
-      <Moon className="mx-auto h-8 w-8 text-navy/20" />
-      <p className="mt-3 text-lg font-bold text-navy">אין צדיקים מתועדים ליום זה</p>
-      <p className="mt-1 text-sm text-navy/40">נסה לבחור תאריך אחר</p>
+    <div className="rounded-md border border-rule bg-surface p-10 text-center">
+      <Moon className="mx-auto h-8 w-8 text-gold/40" />
+      <p className="mt-3 font-display text-xl font-bold text-ink">אין צדיקים מתועדים ליום זה</p>
+      <p className="mt-1 text-sm text-muted">נסו לבחור תאריך אחר בלוח</p>
     </div>
   )
 
   return (
-    <div className="grid gap-5 pb-10">
-      {/* Date header — full width */}
+    <div className="grid gap-4 sm:gap-6 pb-10">
+      {/* Masthead */}
       <HebrewDateBlock
         hebrewDateDisplay={hebrew.hebrewDateDisplay}
         parasha={hebrew.parasha}
@@ -42,12 +43,12 @@ export function Today() {
         specialDays={hebrew.specialDays}
       />
 
-      {/* Content area — single column mobile, 2-col desktop */}
+      {/* Content — single column mobile, 2-col desktop */}
       <div className="grid gap-5 lg:grid-cols-[1fr,300px] lg:items-start">
-        {/* ── Main card (left on desktop) ── */}
+        {/* Main card */}
         <div>
           {isLoading ? (
-            <div className="animate-pulse rounded-2xl border border-gray-light bg-white h-[32rem]" />
+            <div className="animate-pulse rounded-md border border-rule bg-surface h-[28rem]" />
           ) : mainTzaddik ? (
             <TzaddikCard tzaddik={mainTzaddik} variant="main" />
           ) : (
@@ -55,33 +56,36 @@ export function Today() {
           )}
         </div>
 
-        {/* ── Right sidebar on desktop ── */}
+        {/* Sidebar */}
         <div className="flex flex-col gap-4">
-          {/* Secondary tzaddikim */}
           {restTzaddikim.length > 0 && (
             <section>
-              <h3 className="text-sm font-bold text-navy/40 mb-3 px-1">
-                עוד מבעלי ההילולה של היום
+              <h3 className="flex items-center gap-2.5 text-xs font-bold tracking-[2px] text-muted mb-3 px-1">
+                עוד מבעלי ההילולה
+                <span className="flex-1 h-px bg-[color:var(--line)]" />
               </h3>
               {/* Desktop: stacked mini cards */}
-              <div className="hidden lg:flex lg:flex-col lg:gap-3">
+              <div className="hidden lg:flex lg:flex-col lg:gap-2.5">
                 {restTzaddikim.map(tz => (
                   <TzaddikCard key={tz.id} tzaddik={tz} variant="mini" />
                 ))}
               </div>
-              {/* Mobile: horizontal slider */}
+              {/* Mobile: swipe slider */}
               <div className="lg:hidden">
                 <TzaddikSlider tzaddikim={restTzaddikim} />
               </div>
             </section>
           )}
 
+          {/* Calendar (Hebrew + Gregorian) */}
+          <HebrewCalendar date={selectedDate} onChange={setSelectedDate} />
+
           {/* Day navigator */}
           <DayNavigator date={selectedDate} onChange={setSelectedDate} />
         </div>
       </div>
 
-      {/* Subscribe — full width */}
+      {/* Subscribe */}
       <SubscribeForm />
     </div>
   )

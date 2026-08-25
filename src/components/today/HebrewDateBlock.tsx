@@ -8,14 +8,6 @@ interface HebrewDateBlockProps {
   specialDays?: SpecialDay[]
 }
 
-const specialDayColors: Record<string, string> = {
-  holiday:     'bg-gold/20 text-gold border border-gold/30',
-  fast:        'bg-cream/10 text-cream/70 border border-cream/20',
-  roshchodesh: 'bg-gold/25 text-gold border border-gold/40',
-  omer:        'bg-cream/10 text-cream/60 border border-cream/20',
-  special:     'bg-cream/10 text-cream/60 border border-cream/20',
-}
-
 export function HebrewDateBlock({
   hebrewDateDisplay,
   parasha,
@@ -24,52 +16,51 @@ export function HebrewDateBlock({
   specialDays = [],
 }: HebrewDateBlockProps) {
   const formattedGregorian = gregorianDate.toLocaleDateString('he-IL', {
+    weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   })
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 pt-5 pb-6 shadow-lg" style={{ backgroundColor: '#1E2A38', color: '#F7F3EA' }}>
-      {/* Subtle decorative element */}
-      <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden rounded-2xl">
-        <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-white/[0.03]" />
-        <div className="absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-white/[0.03]" />
-      </div>
+    <section className="text-center pt-1 pb-1">
+      <div className="dsy-dbl" />
 
-      <div className="relative">
-        {/* Gregorian + special day badges */}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="text-xs text-cream/40">{formattedGregorian}</span>
-          {specialDays.map((sd, i) => (
-            <span
-              key={i}
-              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${specialDayColors[sd.type] ?? 'bg-cream/10 text-cream/60 border border-cream/20'}`}
-            >
-              {sd.label}
-            </span>
-          ))}
-        </div>
-
-        {/* Hebrew date */}
-        <h1 className="font-heading text-4xl font-black text-cream leading-none sm:text-5xl">
+      <div className="mt-3 sm:mt-6">
+        <div className="text-[10px] sm:text-[11px] tracking-[3px] font-bold text-gold mb-1.5">בְּעֲלֵי הַהִילּוּלָא שֶׁל הַיּוֹם</div>
+        <h1 className="font-display font-black text-ink leading-none text-[34px] sm:text-6xl text-balance">
           {hebrewDateDisplay}
         </h1>
+      </div>
 
-        {/* Parasha + tzaddikim count */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {parasha && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold text-gold">
-              <span className="opacity-70">פרשת</span>
-              {parasha.replace('פרשת ', '')}
-            </span>
-          )}
-          {totalTzaddikim > 0 && (
-            <span className="text-xs text-cream/30">
-              {totalTzaddikim} בעלי הילולא
-            </span>
-          )}
-        </div>
+      <div className="dsy-flourish my-3 sm:my-5" aria-hidden="true">
+        <span className="l" />
+        <svg viewBox="0 0 68 20"><path d="M2 10H27M41 10H66" strokeWidth="1.1" /><path d="M34 3 L39.5 10 L34 17 L28.5 10 Z" /><circle cx="34" cy="10" r="2" fill="var(--ground)" /></svg>
+        <span className="l" />
+      </div>
+
+      <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-[13px] text-ink-soft">
+        <span>{formattedGregorian}</span>
+        {parasha && (
+          <>
+            <i className="w-1 h-1 rounded-full bg-gold/70" />
+            <span>{parasha.startsWith('פרשת') ? parasha : `פרשת ${parasha}`}</span>
+          </>
+        )}
+        {specialDays.map((sd, i) => (
+          <span
+            key={i}
+            className="text-xs font-semibold px-3 py-0.5 rounded-full border border-[color:var(--line)] text-gold-deep bg-surface-2"
+          >
+            {sd.label}
+          </span>
+        ))}
+        {totalTzaddikim > 0 && (
+          <>
+            <i className="w-1 h-1 rounded-full bg-gold/70" />
+            <span className="text-muted">{totalTzaddikim} בעלי הילולא</span>
+          </>
+        )}
       </div>
     </section>
   )
