@@ -52,6 +52,7 @@ export async function getTzaddikimForDate(hebrewDay: number, hebrewMonth: string
     : query.or(months.map(m => `hebrew_month.eq.${m}`).join(','))
 
   const { data, error } = await filteredQuery
+    .gte('importance_score', 30) // hide suppressed duplicates/junk (scored <=25)
     .order('importance_score', { ascending: false, nullsFirst: false })
     .limit(4)
 
