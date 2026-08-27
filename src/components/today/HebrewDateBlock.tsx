@@ -44,7 +44,7 @@ export function HebrewDateBlock({
         {parasha && (
           <>
             <i className="w-1 h-1 rounded-full bg-gold/70" />
-            <span>{parasha.startsWith('פרשת') ? parasha : `פרשת ${parasha}`}</span>
+            <span>{`פרשת ${parasha.replace(/^פ[֑-ׇ]*ר[֑-ׇ]*ש[֑-ׇ]*ת[֑-ׇ]*\s+/, '')}`}</span>
           </>
         )}
         {specialDays.map((sd, i) => (
