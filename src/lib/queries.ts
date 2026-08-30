@@ -127,3 +127,28 @@ export async function subscribeUser(subscriber: Subscriber) {
 
   return data as Subscriber
 }
+
+export interface SuggestionInput {
+  type: 'new_tzaddik' | 'add_info'
+  tzaddikId?: number
+  tzaddikName?: string
+  hebrewDate?: string
+  content: string
+  sources?: string
+  submitterName?: string
+  submitterEmail?: string
+}
+
+export async function submitSuggestion(s: SuggestionInput) {
+  const { error } = await supabase.from('suggestions').insert({
+    type: s.type,
+    tzaddik_id: s.tzaddikId ?? null,
+    tzaddik_name: s.tzaddikName || null,
+    hebrew_date: s.hebrewDate || null,
+    content: s.content,
+    sources: s.sources || null,
+    submitter_name: s.submitterName || null,
+    submitter_email: s.submitterEmail || null,
+  })
+  if (error) throw error
+}

@@ -3,6 +3,7 @@ import { AppHeader } from './components/layout/AppHeader'
 import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
 import { Today } from './pages/Today'
+import { Suggest } from './pages/Suggest'
 import { Admin } from './pages/Admin'
 
 function AppLayout() {
@@ -13,6 +14,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/today" element={<Today />} />
+          <Route path="/suggest" element={<Suggest />} />
         </Routes>
       </main>
       <Footer />

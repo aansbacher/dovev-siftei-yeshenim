@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import { Heart, Share2, Copy, BookOpen, Send, Loader2 } from 'lucide-react'
 import type { Tzaddik } from '../../types'
@@ -189,6 +190,16 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
           </div>
         </div>
       )}
+
+      {/* Suggest correction / addition */}
+      <div className="pt-4 text-center border-t border-rule">
+        <Link
+          to={`/suggest?type=add_info&id=${tzaddik.id}&name=${encodeURIComponent(tzaddik.popularName)}`}
+          className="text-[13px] font-semibold text-gold-deep hover:text-gold transition"
+        >
+          יש לכם מידע נוסף על הצדיק? הציעו תיקון או הוספה
+        </Link>
+      </div>
     </div>
   )
 }

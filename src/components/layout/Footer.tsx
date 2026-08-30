@@ -1,9 +1,17 @@
+import { Link } from 'react-router-dom'
+
 export function Footer() {
   return (
-    <footer className="border-t border-gray-light bg-white py-6 text-center text-xs text-navy/30">
+    <footer className="border-t border-rule bg-surface py-7 text-center">
       <div className="mx-auto max-w-7xl px-4">
-        זכר צדיקים לברכה · דובב שפתי ישנים
-        <span className="block mt-1 text-navy/20 text-[10px]">v2.0</span>
+        <Link
+          to="/suggest"
+          className="inline-block font-display text-base font-bold text-gold-deep hover:text-gold transition"
+        >
+          הַצִּיעוּ צַדִּיק אוֹ הוֹסִיפוּ מֵידָע
+        </Link>
+        <div className="mt-4 text-xs text-muted">זכר צדיקים לברכה · דובב שפתי ישנים</div>
+        <span className="block mt-1 text-muted/60 text-[10px]">v2.1</span>
       </div>
     </footer>
   )
