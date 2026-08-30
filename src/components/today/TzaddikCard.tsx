@@ -77,23 +77,24 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
   }
 
   return (
-    <div className="mt-4 pt-3 border-t border-gray-light">
-      <p className="text-[11px] font-semibold text-navy/30 uppercase tracking-widest mb-2">שאל שאלה</p>
+    <div className="mt-5 pt-4 border-t border-rule">
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <span className="text-[11px] font-bold tracking-[2px] text-gold">שְׁאֲלוּ עַל הַצַּדִּיק</span>
+        <span className="flex-1 h-px bg-[color:var(--line)]" />
+      </div>
       <div className="flex gap-2">
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && ask()}
-          placeholder={tabPlaceholders[tabType] ?? 'שאל שאלה...'}
-          className="flex-1 text-sm rounded-xl border border-gray-light bg-cream px-3 py-2 text-navy placeholder-navy/30 outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/20 transition"
-          style={{ backgroundColor: '#F7F3EA' }}
+          placeholder={tabPlaceholders[tabType] ?? 'שאלו על הצדיק...'}
+          className="flex-1 text-sm rounded-lg border border-rule bg-surface-2 px-3.5 py-2.5 text-ink placeholder:text-muted outline-none focus:border-gold focus:ring-2 focus:ring-gold/15 transition"
           dir="rtl"
         />
         <button
           onClick={ask}
           disabled={!query.trim() || loading}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-navy text-cream disabled:opacity-40 transition active:scale-95 flex-shrink-0"
-          style={{ backgroundColor: '#1E2A38' }}
+          className="flex items-center justify-center w-10 h-10 rounded-lg bg-ink text-ground disabled:opacity-40 transition active:scale-95 flex-shrink-0"
         >
           {loading
             ? <Loader2 className="h-4 w-4 animate-spin" />
@@ -101,8 +102,10 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
         </button>
       </div>
       {answer && (
-        <div className="mt-3 rounded-xl bg-cream px-3 py-3 text-sm leading-7 text-navy/80 whitespace-pre-wrap" style={{ backgroundColor: '#F7F3EA' }} dir="rtl">
-          {answer}
+        <div className="mt-3 relative rounded-lg bg-surface-2 border border-rule px-4 py-3.5" dir="rtl">
+          <span className="absolute top-0 bottom-0 right-0 w-[3px] bg-gold/50 rounded-r-lg" />
+          <div className="text-[10px] font-bold tracking-[1.5px] text-gold-deep mb-1.5">מֵענֶה מבוסס מקורות</div>
+          <p className="font-display text-[15px] leading-[1.85] text-ink whitespace-pre-wrap">{answer}</p>
         </div>
       )}
       {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
@@ -121,75 +124,65 @@ const TABS = [
 function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
   return (
     <div className="space-y-6" dir="rtl">
-      {/* Message */}
+      {/* Quote */}
       {tzaddik.quote && (
-        <div className="bg-navy rounded-2xl px-5 py-4" style={{ backgroundColor: '#1E2A38', color: '#F7F3EA' }}>
-          <p className="text-xs font-semibold text-gold/80 mb-2 uppercase tracking-wider" style={{ color: '#B89552' }}>מסר לחיים</p>
-          <p className="text-cream font-semibold leading-7 text-sm">"{tzaddik.quote}"</p>
-          <p className="text-cream/40 text-xs mt-2 text-left" style={{ color: 'rgba(247,243,234,0.4)' }}>— {tzaddik.popularName}</p>
+        <div className="relative bg-surface-2 border border-rule rounded-md px-5 pt-6 pb-4">
+          <span className="absolute -top-3 right-3 font-display text-5xl leading-none text-gold opacity-30">״</span>
+          <p className="font-display font-medium text-lg leading-[1.7] text-ink text-pretty">{tzaddik.quote}</p>
+          <p className="text-muted text-xs mt-2.5 text-left">{tzaddik.popularName}</p>
         </div>
       )}
 
       {/* Extended Torah */}
       {tzaddik.torah && (
         <div>
-          <h4 className="text-sm font-bold text-navy mb-2 flex items-center gap-2">
-            <span className="text-gold">📖</span> עוד מתורתו
-          </h4>
-          <p className="text-sm leading-7 text-text/80">{tzaddik.torah}</p>
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <h4 className="font-display text-lg font-bold text-ink">מִתּוֹרָתוֹ</h4>
+            <span className="flex-1 h-px bg-[color:var(--line)]" />
+          </div>
+          <p className="text-[15px] leading-[1.85] text-ink-soft whitespace-pre-wrap">{tzaddik.torah}</p>
         </div>
       )}
 
       {/* Full story */}
       {tzaddik.story && (
         <div>
-          <h4 className="text-sm font-bold text-navy mb-2 flex items-center gap-2">
-            <span className="text-gold">🕯️</span> סיפור
-          </h4>
-          <p className="text-sm leading-7 text-text/80">{tzaddik.story}</p>
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <h4 className="font-display text-lg font-bold text-ink">סִיפּוּר</h4>
+            <span className="flex-1 h-px bg-[color:var(--line)]" />
+          </div>
+          <p className="text-[15px] leading-[1.85] text-ink-soft whitespace-pre-wrap">{tzaddik.story}</p>
         </div>
       )}
 
       {/* Know the tzaddik */}
       <div>
-        <h4 className="text-sm font-bold text-navy mb-3 flex items-center gap-2">
-          <span className="text-gold">🏛️</span> להכיר את הצדיק
-        </h4>
-        <div className="space-y-2">
-          {tzaddik.fullName && (
-            <div className="flex gap-3">
-              <span className="text-xs text-navy/40 min-w-[4rem]">שם מלא</span>
-              <span className="text-sm text-text">{tzaddik.fullName}</span>
-            </div>
-          )}
-          {tzaddik.years && (
-            <div className="flex gap-3">
-              <span className="text-xs text-navy/40 min-w-[4rem]">שנים</span>
-              <span className="text-sm text-text">{tzaddik.years}</span>
-            </div>
-          )}
-          {tzaddik.stream && (
-            <div className="flex gap-3">
-              <span className="text-xs text-navy/40 min-w-[4rem]">זרם</span>
-              <span className="text-sm text-text">{tzaddik.stream}</span>
-            </div>
-          )}
-          {tzaddik.role && (
-            <div className="flex gap-3">
-              <span className="text-xs text-navy/40 min-w-[4rem]">תפקיד</span>
-              <span className="text-sm text-text">{tzaddik.role}</span>
-            </div>
-          )}
+        <div className="flex items-center gap-2.5 mb-3">
+          <h4 className="font-display text-lg font-bold text-ink">לְהַכִּיר אֶת הַצַּדִּיק</h4>
+          <span className="flex-1 h-px bg-[color:var(--line)]" />
+        </div>
+        <div className="space-y-2.5">
+          {([['שם מלא', tzaddik.fullName], ['שנים', tzaddik.years], ['זרם', tzaddik.stream], ['תפקיד', tzaddik.role]] as [string, string | undefined][])
+            .filter(([, v]) => v)
+            .map(([k, v]) => (
+              <div key={k} className="flex gap-3">
+                <span className="text-xs font-semibold text-gold-deep min-w-[4rem]">{k}</span>
+                <span className="text-sm text-ink">{v}</span>
+              </div>
+            ))}
         </div>
       </div>
 
       {/* Sources */}
       {tzaddik.sources && tzaddik.sources.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-navy/40 mb-2 uppercase tracking-wider">מקורות</h4>
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <h4 className="font-display text-base font-bold text-ink">מְקוֹרוֹת</h4>
+            <span className="flex-1 h-px bg-[color:var(--line)]" />
+          </div>
           <div className="flex flex-wrap gap-2">
             {tzaddik.sources.map(s => (
-              <span key={s} className="text-xs bg-cream rounded-full px-3 py-1 text-navy/60 border border-gray-light">
+              <span key={s} className="text-xs bg-surface-2 rounded-full px-3 py-1 text-ink-soft border border-rule">
                 {s}
               </span>
             ))}
@@ -252,7 +245,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
         <BottomSheet
           isOpen={deepenOpen}
           onClose={() => setDeepenOpen(false)}
-          title={`📚 ${tzaddik.popularName}`}
+          title={tzaddik.popularName}
         >
           <DeepenSheet tzaddik={tzaddik} />
         </BottomSheet>
@@ -377,7 +370,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
       <BottomSheet
         isOpen={deepenOpen}
         onClose={() => setDeepenOpen(false)}
-        title={`📚 ${tzaddik.popularName}`}
+        title={tzaddik.popularName}
       >
         <DeepenSheet tzaddik={tzaddik} />
       </BottomSheet>

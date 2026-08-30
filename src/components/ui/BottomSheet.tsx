@@ -54,13 +54,16 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-2 pb-4 border-b border-gray-light sticky top-5 bg-bg z-10">
+        <div className="flex items-center justify-between px-5 pt-2 pb-4 border-b border-rule sticky top-5 bg-bg z-10">
           {title && (
-            <h3 className="font-heading text-lg font-bold text-navy">{title}</h3>
+            <div>
+              <div className="text-[10px] font-bold tracking-[2px] text-gold mb-1">בַּעַל הַהִילּוּלָא</div>
+              <h3 className="font-display text-xl font-bold text-ink leading-tight">{title}</h3>
+            </div>
           )}
           <button
             onClick={onClose}
-            className="mr-auto p-2 rounded-full hover:bg-cream-dark transition text-navy/50 hover:text-navy"
+            className="mr-auto p-2 rounded-full hover:bg-surface-2 transition text-ink-soft hover:text-ink"
             aria-label="סגור"
           >
             <X className="h-5 w-5" />
