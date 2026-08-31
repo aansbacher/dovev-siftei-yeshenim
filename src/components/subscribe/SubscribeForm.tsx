@@ -3,6 +3,8 @@ import { useMutation } from '@tanstack/react-query'
 import { subscribeUser } from '../../lib/queries'
 import type { Subscriber } from '../../types'
 
+const WHATSAPP_GROUP = 'https://chat.whatsapp.com/IRsYx8g1hc1EdOycqR3EJc'
+
 export function SubscribeForm() {
   const [form, setForm] = useState({
     email: '',
@@ -107,6 +109,25 @@ export function SubscribeForm() {
             </p>
           )}
         </form>
+
+        {/* WhatsApp community group */}
+        <div className="mt-6 pt-5 border-t border-rule">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <span className="h-px flex-1 max-w-[60px] bg-[color:var(--line)]" />
+            <span className="text-[11px] font-bold tracking-[2px] text-muted">אוֹ</span>
+            <span className="h-px flex-1 max-w-[60px] bg-[color:var(--line)]" />
+          </div>
+          <p className="text-[13px] text-muted mb-3.5">מעדיפים וואטסאפ? הצטרפו לקבוצה השקטה וקבלו את הגיליון מדי יום</p>
+          <a
+            href={WHATSAPP_GROUP}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 rounded-full bg-[#25D366] text-white px-7 py-2.5 text-sm font-bold shadow-sm hover:brightness-95 transition"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a8 8 0 01-2.4-1.5 9 9 0 01-1.6-2c-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5s0-.4 0-.5l-1-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.6 2.6 1 2.9.7 3.4.7.5 0 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.1 4.1 4.2-1.1A10 10 0 1012 2z"/></svg>
+            הצטרפו לקבוצת הוואטסאפ
+          </a>
+        </div>
       </div>
     </section>
   )
