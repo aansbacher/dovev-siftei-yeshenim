@@ -19,22 +19,25 @@ function toggleLiked(id: number): boolean {
   return s.has(id)
 }
 
-async function shareTzaddik(tzaddik: Tzaddik) {
-  const text = tzaddik.quote
-    ? `"${tzaddik.quote}"\n— ${tzaddik.popularName}\n\nדובב שפתי ישנים`
-    : `${tzaddik.popularName} — דובב שפתי ישנים`
-  if (navigator.share) {
-    await navigator.share({ text, url: window.location.href }).catch(() => {})
-  } else {
-    await navigator.clipboard.writeText(text).catch(() => {})
-  }
+function buildShareText(tzaddik: Tzaddik) {
+  const body = tzaddik.quote
+    ? `״${tzaddik.quote}״\n${tzaddik.popularName}`
+    : tzaddik.popularName
+  return `${body}\n\nמתוך "דובב שפתי ישנים"\n${window.location.href}`
+}
+
+function shareToWhatsApp(tzaddik: Tzaddik) {
+  window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(tzaddik))}`, '_blank', 'noopener,noreferrer')
+}
+
+async function nativeShare(tzaddik: Tzaddik) {
+  const text = buildShareText(tzaddik)
+  if (navigator.share) await navigator.share({ text }).catch(() => {})
+  else await navigator.clipboard.writeText(text).catch(() => {})
 }
 
 async function copyTzaddik(tzaddik: Tzaddik) {
-  const text = tzaddik.quote
-    ? `"${tzaddik.quote}"\n— ${tzaddik.popularName}`
-    : tzaddik.popularName
-  await navigator.clipboard.writeText(text).catch(() => {})
+  await navigator.clipboard.writeText(buildShareText(tzaddik)).catch(() => {})
 }
 
 interface TzaddikCardProps {
@@ -211,6 +214,8 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
   const [imgError, setImgError] = useState(false)
   const [activeTab, setActiveTab] = useState('teaching')
 
+  const [shareOpen, setShareOpen] = useState(false)
+
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
     setCopied(true)
@@ -351,13 +356,44 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
             <BookOpen className="h-4 w-4" />
             העמק בצדיק
           </button>
-          <button
-            onClick={() => shareTzaddik(tzaddik)}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition"
-          >
-            <Share2 className="h-4 w-4 text-ink-soft" />
-            שתף
-          </button>
+          {/* Share popover */}
+          <div className="relative">
+            <button
+              onClick={() => setShareOpen(o => !o)}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition"
+            >
+              <Share2 className="h-4 w-4 text-ink-soft" />
+              שתף
+            </button>
+            {shareOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShareOpen(false)} />
+                <div className="absolute z-20 top-full mt-2 right-0 w-48 rounded-lg bg-surface border border-rule shadow-[0_12px_30px_-12px_var(--shadow)] py-1.5 overflow-hidden">
+                  <button
+                    onClick={() => { shareToWhatsApp(tzaddik); setShareOpen(false) }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none" fill="#25D366"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a8 8 0 01-2.4-1.5 9 9 0 01-1.6-2c-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5s0-.4 0-.5l-1-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.6 2.6 1 2.9.7 3.4.7.5 0 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.1 4.1 4.2-1.1A10 10 0 1012 2z"/></svg>
+                    שיתוף לוואטסאפ
+                  </button>
+                  <button
+                    onClick={() => { handleCopy(); setShareOpen(false) }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
+                  >
+                    <Copy className="h-4 w-4 flex-none text-ink-soft" />
+                    {copied ? 'הועתק ✓' : 'העתקת טקסט'}
+                  </button>
+                  <button
+                    onClick={() => { nativeShare(tzaddik); setShareOpen(false) }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
+                  >
+                    <Share2 className="h-4 w-4 flex-none text-ink-soft" />
+                    שיתוף נוסף
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <button
             onClick={() => setLiked(toggleLiked(tzaddik.id))}
             className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[13.5px] font-semibold transition border ${
@@ -366,13 +402,6 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
           >
             <Heart className={`h-4 w-4 ${liked ? 'fill-current' : 'text-ink-soft'}`} />
             {liked ? 'נשמר' : 'שמירה'}
-          </button>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition mr-auto"
-          >
-            <Copy className="h-4 w-4 text-ink-soft" />
-            {copied ? 'הועתק ✓' : 'העתק'}
           </button>
         </div>
       </article>
