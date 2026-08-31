@@ -1,4 +1,7 @@
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-  "crons": [{ "path": "/api/send-digest", "schedule": "0 5 * * *" }]
+  "crons": [
+    { "path": "/api/qa-scan", "schedule": "0 3 * * *" },
+    { "path": "/api/send-digest", "schedule": "0 5 * * *" }
+  ]
 }
