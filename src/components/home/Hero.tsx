@@ -42,7 +42,7 @@ export function Hero() {
             דובב שפתי ישנים
           </h1>
           <p className="mt-2 text-sm text-cream/60 leading-relaxed max-w-sm">
-            סיפור אחד. וורט אחד. רגע של השראה מצדיקי ישראל — בכל יום.
+            סיפור אחד. וורט אחד. רגע של השראה מצדיקי ישראל, בכל יום.
           </p>
         </div>
 
