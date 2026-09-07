@@ -8,6 +8,7 @@ import { HebrewDateBlock } from '../components/today/HebrewDateBlock'
 import { TzaddikDeck } from '../components/today/TzaddikDeck'
 import { DayNavigator } from '../components/today/DayNavigator'
 import { HebrewCalendar } from '../components/today/HebrewCalendar'
+import { ReadingPrefs } from '../components/today/ReadingPrefs'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
 
 export function Today() {
@@ -40,6 +41,13 @@ export function Today() {
         totalTzaddikim={tzaddikim.length}
         specialDays={hebrew.specialDays}
       />
+
+      {/* Reading style control */}
+      {tzaddikim.length > 0 && (
+        <div className="max-w-2xl mx-auto w-full flex justify-end">
+          <ReadingPrefs />
+        </div>
+      )}
 
       {/* The day's tzadikim — swipeable deck, default = the most well-known */}
       {isLoading ? (

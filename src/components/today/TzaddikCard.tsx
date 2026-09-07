@@ -273,30 +273,29 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
 
   return (
     <>
-      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-md bg-surface border border-rule shadow-[0_18px_40px_-30px_var(--shadow)] p-5 sm:p-8">
-        <span className="dsy-cor tl" /><span className="dsy-cor tr" /><span className="dsy-cor bl" /><span className="dsy-cor br" />
+      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-[22px] bg-surface border border-rule shadow-[0_10px_30px_-12px_var(--shadow)] p-5 sm:p-7">
 
-        {/* ── Head: framed portrait + name ── */}
+        {/* ── Head: soft rounded portrait + name ── */}
         <div className="relative z-[1] flex gap-4 sm:gap-5 items-center">
-          <div className="shrink-0 w-[100px] h-[126px] sm:w-[104px] sm:h-[130px] rounded-[3px] border border-gold p-1 bg-surface-2 overflow-hidden shadow-[0_8px_20px_-12px_var(--shadow)]">
+          <div className="shrink-0 w-[92px] h-[116px] sm:w-[104px] sm:h-[128px] rounded-2xl p-1 bg-surface-2 overflow-hidden shadow-[0_8px_18px_-10px_var(--shadow)]">
             {tzaddik.imageUrl && !imgError ? (
               <img
                 src={tzaddik.imageUrl}
                 alt={tzaddik.popularName}
-                className="w-full h-full object-cover object-top rounded-[2px] block"
+                className="w-full h-full object-cover object-top rounded-xl block"
                 loading="lazy"
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="w-full h-full rounded-[2px] flex items-center justify-center bg-navy">
-                <span className="font-display text-3xl text-white/15">
+              <div className="w-full h-full rounded-xl flex items-center justify-center bg-gold/90">
+                <span className="font-display text-3xl text-white/25">
                   {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
                 </span>
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <div className="text-[11px] font-bold tracking-[3px] text-gold mb-1.5">בעל ההילולה</div>
+            <div className="text-[11px] font-bold tracking-[2px] text-gold mb-1.5">בעל ההילולה</div>
             <h2 className="font-display font-bold text-2xl sm:text-[31px] leading-tight text-ink text-balance">
               {tzaddik.popularName}
             </h2>
@@ -336,10 +335,10 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
               <TabsPrimitive.Content
                 key={value}
                 value={value}
-                className="pt-4 min-h-[5rem] text-[15px] leading-[1.85] text-ink-soft"
+                className="pt-4 min-h-[5rem] text-ink-soft"
               >
                 {content
-                  ? <p className="whitespace-pre-wrap">{content}</p>
+                  ? <p className="whitespace-pre-wrap read-text">{content}</p>
                   : <span className="italic text-muted">{empty}</span>}
                 <AskBox tzaddikName={tzaddik.popularName} tabType={value} />
               </TabsPrimitive.Content>
@@ -351,7 +350,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
         <div className="flex flex-wrap items-center gap-2 mt-6">
           <button
             onClick={() => setDeepenOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-ink text-ground text-[13.5px] font-semibold hover:opacity-90 transition"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-gold text-white text-[13.5px] font-semibold shadow-[0_6px_16px_-6px_rgba(91,118,229,.6)] hover:bg-gold-deep transition"
           >
             <BookOpen className="h-4 w-4" />
             העמק בצדיק

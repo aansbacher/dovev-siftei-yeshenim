@@ -14,11 +14,11 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-navy border-b border-navy-light/40 shadow-sm" style={{ backgroundColor: '#1E2A38' }}>
+      <header className="sticky top-0 z-40 bg-surface/85 backdrop-blur-md border-b border-rule">
         <div className="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
           <Link
             to="/"
-            className="font-heading text-base font-bold text-cream leading-tight"
+            className="font-display text-lg font-bold text-ink leading-tight"
             style={{ letterSpacing: '-0.01em' }}
           >
             דובב שפתי ישנים
@@ -30,7 +30,7 @@ export function AppHeader() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="px-3 py-1.5 text-sm font-medium text-cream/70 hover:text-cream rounded-lg hover:bg-white/5 transition"
+                className="px-3 py-1.5 text-sm font-medium text-ink-soft hover:text-gold rounded-lg hover:bg-accent-soft transition"
               >
                 {item.label}
               </Link>
@@ -40,7 +40,7 @@ export function AppHeader() {
           {/* Hamburger */}
           <button
             onClick={() => setOpen(true)}
-            className="md:hidden p-2 -mr-1 text-cream/80 hover:text-cream transition"
+            className="md:hidden p-2 -mr-1 text-ink-soft hover:text-gold transition"
             aria-label="פתח תפריט"
           >
             <Menu className="h-6 w-6" />
@@ -54,18 +54,18 @@ export function AppHeader() {
       >
         {/* Backdrop */}
         <div
-          className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-ink/40 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setOpen(false)}
         />
         {/* Panel */}
         <div
-          className={`absolute inset-y-0 right-0 w-72 bg-navy flex flex-col shadow-2xl transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute inset-y-0 right-0 w-72 bg-surface flex flex-col shadow-2xl transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
         >
-          <div className="flex items-center justify-between px-5 pt-5 pb-6 border-b border-cream/10">
-            <span className="font-heading text-base font-bold text-cream">דובב שפתי ישנים</span>
+          <div className="flex items-center justify-between px-5 pt-5 pb-6 border-b border-rule">
+            <span className="font-display text-lg font-bold text-ink">דובב שפתי ישנים</span>
             <button
               onClick={() => setOpen(false)}
-              className="p-2 text-cream/60 hover:text-cream transition"
+              className="p-2 text-muted hover:text-ink transition"
               aria-label="סגור תפריט"
             >
               <X className="h-5 w-5" />
@@ -77,7 +77,7 @@ export function AppHeader() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="px-4 py-3.5 text-base font-medium text-cream/80 hover:text-cream hover:bg-white/5 rounded-xl transition"
+                className="px-4 py-3.5 text-base font-medium text-ink-soft hover:text-gold hover:bg-accent-soft rounded-xl transition"
                 onClick={() => setOpen(false)}
               >
                 {item.label}
@@ -85,8 +85,8 @@ export function AppHeader() {
             ))}
           </nav>
 
-          <div className="mt-auto px-5 pb-8 pt-4 border-t border-cream/10">
-            <p className="text-xs text-cream/30 leading-relaxed">
+          <div className="mt-auto px-5 pb-8 pt-4 border-t border-rule">
+            <p className="text-xs text-muted leading-relaxed">
               זכר צדיקים לברכה
             </p>
           </div>
