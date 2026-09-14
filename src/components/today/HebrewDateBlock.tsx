@@ -26,9 +26,22 @@ export function HebrewDateBlock({
     <section className="text-center pt-1 pb-1">
       <div className="dsy-dbl" />
 
-      <div className="mt-3 sm:mt-6">
-        <div className="text-[10px] sm:text-[11px] tracking-[3px] font-bold text-gold mb-1.5">בְּעֲלֵי הַהִילּוּלָא שֶׁל הַיּוֹם</div>
-        <h1 className="font-display font-black text-ink leading-none text-[34px] sm:text-6xl text-balance">
+      <div className="relative mt-3 sm:mt-6">
+        {/* warm halo directly behind the hero date */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[150px] sm:w-[380px] sm:h-[190px] rounded-full"
+          style={{ background: 'radial-gradient(closest-side, rgba(217,162,78,.22), rgba(217,162,78,0) 72%)' }}
+        />
+        <div className="relative inline-flex items-center gap-2 text-[10px] sm:text-[11px] tracking-[3px] font-bold text-warm-deep mb-2.5">
+          <span className="h-px w-4 bg-warm/50" />
+          בְּעֲלֵי הַהִילּוּלָא שֶׁל הַיּוֹם
+          <span className="h-px w-4 bg-warm/50" />
+        </div>
+        <h1
+          className="relative font-display font-black text-ink leading-none text-[40px] sm:text-[68px] text-balance"
+          style={{ textShadow: '0 2px 14px rgba(217,162,78,.18)' }}
+        >
           {hebrewDateDisplay}
         </h1>
       </div>
@@ -55,13 +68,16 @@ export function HebrewDateBlock({
             {sd.label}
           </span>
         ))}
-        {totalTzaddikim > 0 && (
-          <>
-            <i className="w-1 h-1 rounded-full bg-gold/70" />
-            <span className="text-muted">{totalTzaddikim} בעלי הילולא</span>
-          </>
-        )}
       </div>
+
+      {totalTzaddikim > 0 && (
+        <div className="mt-3 flex justify-center">
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-warm-deep bg-warm-soft border border-[color:var(--warm-line)] rounded-full px-3.5 py-1">
+            <i className="w-1.5 h-1.5 rounded-full bg-warm" />
+            {totalTzaddikim} בעלי הילולא היום
+          </span>
+        </div>
+      )}
     </section>
   )
 }

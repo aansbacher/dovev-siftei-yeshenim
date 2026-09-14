@@ -26,6 +26,8 @@ export default {
         'gold-deep': '#4359C6',
         rule:      '#E6E9F6',
         'accent-soft': '#EEF1FD',
+        // warm secondary accent (holiness)
+        warm:      { DEFAULT: '#D9A24E', deep: '#B4772A', soft: '#FBF2E3' },
       },
       fontFamily: {
         sans:    ['Rubik', 'Heebo', 'sans-serif'],

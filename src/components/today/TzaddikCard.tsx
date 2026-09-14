@@ -273,11 +273,11 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
 
   return (
     <>
-      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-[22px] bg-surface border border-rule shadow-[0_10px_30px_-12px_var(--shadow)] p-5 sm:p-7">
+      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-[24px] bg-surface border border-rule shadow-[0_1px_2px_rgba(42,51,80,.04),0_20px_44px_-22px_rgba(42,51,80,.24)] p-5 sm:p-7">
 
         {/* ── Head: soft rounded portrait + name ── */}
         <div className="relative z-[1] flex gap-4 sm:gap-5 items-center">
-          <div className="shrink-0 w-[92px] h-[116px] sm:w-[104px] sm:h-[128px] rounded-2xl p-1 bg-surface-2 overflow-hidden shadow-[0_8px_18px_-10px_var(--shadow)]">
+          <div className="shrink-0 w-[92px] h-[116px] sm:w-[104px] sm:h-[128px] rounded-2xl p-1 bg-surface-2 ring-1 ring-warm/25 overflow-hidden shadow-[0_10px_22px_-12px_var(--shadow)]">
             {tzaddik.imageUrl && !imgError ? (
               <img
                 src={tzaddik.imageUrl}
@@ -287,15 +287,15 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="w-full h-full rounded-xl flex items-center justify-center bg-gold/90">
-                <span className="font-display text-3xl text-white/25">
+              <div className="w-full h-full rounded-xl flex items-center justify-center bg-gradient-to-br from-warm/85 to-warm-deep">
+                <span className="font-display text-3xl text-white/40">
                   {tzaddik.popularName?.trimStart().slice(0, 2) ?? '?'}
                 </span>
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <div className="text-[11px] font-bold tracking-[2px] text-gold mb-1.5">בעל ההילולה</div>
+            <div className="text-[11px] font-bold tracking-[2px] text-warm-deep mb-1.5">בעל ההילולה</div>
             <h2 className="font-display font-bold text-2xl sm:text-[31px] leading-tight text-ink text-balance">
               {tzaddik.popularName}
             </h2>
