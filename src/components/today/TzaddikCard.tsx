@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { Heart, Share2, Copy, BookOpen, Send, Loader2 } from 'lucide-react'
+import { Heart, Share2, Copy, BookOpen, Send, Loader2, ExternalLink } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
 
@@ -125,52 +125,83 @@ const TABS = [
   { value: 'bio',      label: 'מי היה',  key: 'biography' as const, empty: 'אין רקע זמין' },
 ]
 
-function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
+function SectionHead({ children }: { children: React.ReactNode }) {
   return (
-    <div className="space-y-6" dir="rtl">
-      {/* Quote */}
-      {tzaddik.quote && (
-        <div className="relative bg-surface-2 border border-rule rounded-md px-5 pt-6 pb-4">
-          <span className="absolute -top-3 right-3 font-display text-5xl leading-none text-gold opacity-30">״</span>
-          <p className="font-display font-medium text-lg leading-[1.7] text-ink text-pretty">{tzaddik.quote}</p>
-          <p className="text-muted text-xs mt-2.5 text-left">{tzaddik.popularName}</p>
-        </div>
-      )}
+    <div className="flex items-center gap-2.5 mb-3">
+      <span className="h-4 w-1 rounded-full bg-warm" />
+      <h4 className="font-display text-lg font-bold text-ink">{children}</h4>
+      <span className="flex-1 h-px bg-[color:var(--rule)]" />
+    </div>
+  )
+}
 
-      {/* Extended Torah */}
-      {tzaddik.torah && (
-        <div>
-          <div className="flex items-center gap-2.5 mb-2.5">
-            <h4 className="font-display text-lg font-bold text-ink">מִתּוֹרָתוֹ</h4>
-            <span className="flex-1 h-px bg-[color:var(--line)]" />
-          </div>
-          <p className="text-[15px] leading-[1.85] text-ink-soft whitespace-pre-wrap">{tzaddik.torah}</p>
+function furtherReadingLinks(tzaddik: Tzaddik) {
+  const name = (tzaddik.fullName || tzaddik.popularName || '').replace(/[–—-].*/, '').replace(/זצ"ל|זצוק"ל|זיע"א/g, '').trim()
+  const q = encodeURIComponent(name)
+  return [
+    { label: 'ויקיפדיה', url: `https://he.wikipedia.org/w/index.php?search=${q}` },
+    { label: 'החכם היומי', url: `https://www.google.com/search?q=${q}+site:hyomi.org.il` },
+    { label: 'עוד ברשת', url: `https://www.google.com/search?q=${encodeURIComponent(name + ' סיפור תורה')}` },
+  ]
+}
+
+function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
+  const links = furtherReadingLinks(tzaddik)
+  return (
+    <div className="space-y-7" dir="rtl">
+      {/* Quote — warm pull-quote, follows reading font */}
+      {tzaddik.quote && (
+        <div className="relative rounded-2xl bg-warm-soft border border-[color:var(--warm-line)] px-5 pt-7 pb-4">
+          <span className="absolute -top-3 right-4 font-display text-5xl leading-none text-warm opacity-60">״</span>
+          <p className="read-text font-medium text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>{tzaddik.quote}</p>
+          <p className="text-muted text-xs mt-3 text-left">{tzaddik.popularName}</p>
         </div>
       )}
 
       {/* Full story */}
       {tzaddik.story && (
         <div>
-          <div className="flex items-center gap-2.5 mb-2.5">
-            <h4 className="font-display text-lg font-bold text-ink">סִיפּוּר</h4>
-            <span className="flex-1 h-px bg-[color:var(--line)]" />
-          </div>
-          <p className="text-[15px] leading-[1.85] text-ink-soft whitespace-pre-wrap">{tzaddik.story}</p>
+          <SectionHead>הַסִּפּוּר</SectionHead>
+          <p className="read-text text-ink-soft whitespace-pre-wrap">{tzaddik.story}</p>
         </div>
       )}
 
+      {/* Torah */}
+      {tzaddik.torah && (
+        <div>
+          <SectionHead>מִתּוֹרָתוֹ</SectionHead>
+          <p className="read-text text-ink-soft whitespace-pre-wrap">{tzaddik.torah}</p>
+        </div>
+      )}
+
+      {/* Further reading — real links */}
+      <div>
+        <SectionHead>לִקְרִיאָה נוֹסֶפֶת</SectionHead>
+        <div className="flex flex-wrap gap-2">
+          {links.map(l => (
+            <a
+              key={l.label}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold-deep bg-accent-soft border border-rule rounded-full px-4 py-2 hover:border-gold/50 transition"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Know the tzaddik */}
       <div>
-        <div className="flex items-center gap-2.5 mb-3">
-          <h4 className="font-display text-lg font-bold text-ink">לְהַכִּיר אֶת הַצַּדִּיק</h4>
-          <span className="flex-1 h-px bg-[color:var(--line)]" />
-        </div>
+        <SectionHead>לְהַכִּיר אֶת הַצַּדִּיק</SectionHead>
         <div className="space-y-2.5">
           {([['שם מלא', tzaddik.fullName], ['שנים', tzaddik.years], ['זרם', tzaddik.stream], ['תפקיד', tzaddik.role]] as [string, string | undefined][])
             .filter(([, v]) => v)
             .map(([k, v]) => (
               <div key={k} className="flex gap-3">
-                <span className="text-xs font-semibold text-gold-deep min-w-[4rem]">{k}</span>
+                <span className="text-xs font-semibold text-warm-deep min-w-[4rem]">{k}</span>
                 <span className="text-sm text-ink">{v}</span>
               </div>
             ))}
@@ -180,10 +211,7 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
       {/* Sources */}
       {tzaddik.sources && tzaddik.sources.length > 0 && (
         <div>
-          <div className="flex items-center gap-2.5 mb-2.5">
-            <h4 className="font-display text-base font-bold text-ink">מְקוֹרוֹת</h4>
-            <span className="flex-1 h-px bg-[color:var(--line)]" />
-          </div>
+          <SectionHead>מְקוֹרוֹת</SectionHead>
           <div className="flex flex-wrap gap-2">
             {tzaddik.sources.map(s => (
               <span key={s} className="text-xs bg-surface-2 rounded-full px-3 py-1 text-ink-soft border border-rule">
@@ -193,6 +221,9 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
           </div>
         </div>
       )}
+
+      {/* Ask — single entry point (moved out of the tabs) */}
+      <AskBox tzaddikName={tzaddik.popularName} tabType="bio" />
 
       {/* Suggest correction / addition */}
       <div className="pt-4 text-center border-t border-rule">
@@ -340,7 +371,6 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
                 {content
                   ? <p className="whitespace-pre-wrap read-text">{content}</p>
                   : <span className="italic text-muted">{empty}</span>}
-                <AskBox tzaddikName={tzaddik.popularName} tabType={value} />
               </TabsPrimitive.Content>
             )
           })}
