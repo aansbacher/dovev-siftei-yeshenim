@@ -5,19 +5,19 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const ALLOWED_FIELDS = ['image_url', 'biography', 'story', 'torah', 'quote', 'popular_name', 'full_name']
+const ALLOWED_FIELDS = ['image_url', 'biography', 'story', 'torah', 'quote', 'popular_name', 'full_name', 'years', 'stream', 'role', 'hebrew_month', 'hebrew_day', 'importance_score']
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { password, id, fields, checkOnly } = req.body ?? {}
 
-  const envPw = process.env.ADMIN_PASSWORD
+  const envPw = (process.env.ADMIN_PASSWORD ?? '').trim()
   if (!envPw) {
-    return res.status(401).json({ error: 'ADMIN_PASSWORD env var not set on server' })
+    return res.status(401).json({ error: 'env_missing' })
   }
-  if (!password || password !== envPw) {
-    return res.status(401).json({ error: 'Unauthorized' })
+  if (!password || password.trim() !== envPw) {
+    return res.status(401).json({ error: 'wrong_password', pwLen: envPw.length })
   }
 
   if (checkOnly) return res.json({ ok: true })
