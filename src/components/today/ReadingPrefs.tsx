@@ -17,6 +17,8 @@ function apply(fontKey: string, scale: number) {
   const root = document.documentElement
   root.style.setProperty('--read-font', font.css)
   root.style.setProperty('--read-scale', String(scale))
+  // iOS Safari can skip repaint on a CSS-var change — nudge a reflow
+  void root.offsetHeight
 }
 
 /** Compact reading-style control: switch reading font + size (persisted). */

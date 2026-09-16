@@ -307,7 +307,7 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
         {tzaddik.quote && (
           <div className="dsy-pull mt-6 mb-0.5">
             <span className="qm">״</span>
-            <p className="font-display font-medium text-lg sm:text-[22px] leading-[1.75] text-ink text-pretty">
+            <p className="font-medium text-lg sm:text-[22px] leading-[1.75] text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>
               {tzaddik.quote}
             </p>
           </div>
