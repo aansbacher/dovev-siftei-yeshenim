@@ -29,8 +29,8 @@ export function ReadingPrefs() {
 
   useEffect(() => { apply(font, scale) }, [font, scale])
 
-  const setFontK = (k: string) => { setFont(k); try { localStorage.setItem('read-font', k) } catch {} }
-  const setScaleN = (n: number) => { setScale(n); try { localStorage.setItem('read-scale', String(n)) } catch {} }
+  const setFontK = (k: string) => { setFont(k); apply(k, scale); try { localStorage.setItem('read-font', k) } catch {} }
+  const setScaleN = (n: number) => { setScale(n); apply(font, n); try { localStorage.setItem('read-scale', String(n)) } catch {} }
   const sizeIdx = Math.max(0, SIZES.indexOf(scale))
 
   return (
