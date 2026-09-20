@@ -5,6 +5,7 @@ import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
 import { Today } from './pages/Today'
 import { Suggest } from './pages/Suggest'
+import { Search } from './pages/Search'
 import { Admin } from './pages/Admin'
 
 function AppLayout() {
@@ -15,6 +16,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/today" element={<Today />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/suggest" element={<Suggest />} />
         </Routes>
       </main>

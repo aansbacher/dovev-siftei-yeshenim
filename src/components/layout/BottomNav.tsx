@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, BookOpen, Sparkles } from 'lucide-react'
+import { Home, BookOpen, Search } from 'lucide-react'
 
 /** Mobile bottom tab bar with an elevated center button (מזמור-יומי style). */
 export function BottomNav() {
   const { pathname } = useLocation()
   const side = [
     { to: '/', label: 'בית', icon: Home },
-    { to: '/suggest', label: 'הצעה', icon: Sparkles },
+    { to: '/search', label: 'חיפוש', icon: Search },
   ]
   const isToday = pathname === '/today'
 

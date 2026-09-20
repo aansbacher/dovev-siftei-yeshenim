@@ -4,6 +4,7 @@ import * as TabsPrimitive from '@radix-ui/react-tabs'
 import { Heart, Share2, Copy, BookOpen, Send, Loader2, ExternalLink } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
+import { hebrewDateLabel } from '../../lib/hebrewDate'
 
 const LIKED_KEY = 'dshy_liked'
 
@@ -43,6 +44,7 @@ async function copyTzaddik(tzaddik: Tzaddik) {
 interface TzaddikCardProps {
   tzaddik: Tzaddik
   variant?: 'main' | 'mini'
+  showDate?: boolean
 }
 
 // ── AI Ask box ─────────────────────────────────────────────────────────────
@@ -238,7 +240,7 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
   )
 }
 
-export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
+export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: TzaddikCardProps) {
   const [liked, setLiked] = useState(() => getLiked().has(tzaddik.id))
   const [copied, setCopied] = useState(false)
   const [deepenOpen, setDeepenOpen] = useState(false)
@@ -283,6 +285,9 @@ export function TzaddikCard({ tzaddik, variant = 'main' }: TzaddikCardProps) {
           {/* text */}
           <div className="min-w-0">
             <div className="font-display font-bold text-[16px] text-ink leading-tight line-clamp-1">{tzaddik.popularName}</div>
+            {showDate && tzaddik.hebrewDay && tzaddik.hebrewMonth && (
+              <div className="text-[11px] font-semibold text-warm-deep mt-0.5">{hebrewDateLabel(tzaddik.hebrewDay, tzaddik.hebrewMonth)}</div>
+            )}
             {tzaddik.biography && (
               <div className="text-[12.5px] text-muted mt-0.5 leading-snug line-clamp-2">{tzaddik.biography}</div>
             )}

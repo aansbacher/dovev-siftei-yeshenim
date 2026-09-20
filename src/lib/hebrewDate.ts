@@ -8,8 +8,16 @@ const hebrewMonthNames: Record<number, string> = {
 
 const hebrewNumerals = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב', 'יג', 'יד', 'טו', 'טז', 'יז', 'יח', 'יט', 'כ', 'כא', 'כב', 'כג', 'כד', 'כה', 'כו', 'כז', 'כח', 'כט', 'ל']
 
-function toHebrewNumeral(num: number): string {
+export function toHebrewNumeral(num: number): string {
   return hebrewNumerals[num] || num.toString()
+}
+
+/** e.g. (4, "תשרי") → "ד׳ בתשרי" */
+export function hebrewDateLabel(day?: number | null, month?: string | null): string {
+  if (!day || !month) return ''
+  const d = toHebrewNumeral(day)
+  const withGeresh = d.length === 1 ? `${d}׳` : d.length >= 2 ? `${d.slice(0, -1)}״${d.slice(-1)}` : d
+  return `${withGeresh} ב${month}`
 }
 
 export interface SpecialDay {

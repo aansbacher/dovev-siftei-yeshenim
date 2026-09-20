@@ -65,6 +65,33 @@ export async function getTzaddikimForDate(hebrewDay: number, hebrewMonth: string
   return (data ?? []).map(mapRow)
 }
 
+/** Free-text search over tzaddik name / full name / role / book-title. */
+export async function searchTzaddikim(rawQuery: string, limit = 40): Promise<Tzaddik[]> {
+  const term = (rawQuery ?? '').trim()
+  if (term.length < 2) return []
+  // sanitize chars that break the PostgREST or() filter, then build ilike pattern
+  const safe = term.replace(/[,()*%]/g, ' ').trim()
+  if (safe.length < 2) return []
+  const pattern = `%${safe}%`
+  const { data, error } = await supabase
+    .from('tzaddikim')
+    .select('*')
+    .or([
+      `popular_name.ilike.${pattern}`,
+      `full_name.ilike.${pattern}`,
+      `role.ilike.${pattern}`,
+    ].join(','))
+    .gte('importance_score', 30) // hide suppressed duplicates / junk
+    .order('importance_score', { ascending: false, nullsFirst: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('Search error:', error)
+    throw error
+  }
+  return (data ?? []).map(mapRow)
+}
+
 export async function getDailySparkForDate(hebrewDay: number, hebrewMonth: string, parasha: string) {
   const months = monthQueryValues(hebrewMonth)
   console.log('Fetching daily spark for:', hebrewDay, hebrewMonth, 'months:', months, 'parasha:', parasha)
