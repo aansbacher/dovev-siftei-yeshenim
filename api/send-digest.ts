@@ -12,7 +12,10 @@ function esc(s: string) {
   return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string))
 }
 
-function emailHtml(t: any, hebDateDisplay: string) {
+function emailHtml(t: any, hebDateDisplay: string, unsubEmail?: string) {
+  const unsub = unsubEmail
+    ? `<div style="font-size:11px;color:#B3AC98;margin-top:8px;"><a href="https://dovev-siftei-yeshenim.vercel.app/api/unsubscribe?scope=email&email=${encodeURIComponent(unsubEmail)}" style="color:#B3AC98;">הסרה מהדיוור</a></div>`
+    : ''
   const quote = t.quote ? `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.7;color:#1B2530;margin:0 0 14px;">״${esc(t.quote)}״</p>` : ''
   const bio = t.biography ? `<p style="font-size:15px;line-height:1.8;color:#4C5560;margin:0 0 18px;">${esc(t.biography)}</p>` : ''
   const img = t.image_url && /wiki\//.test(t.image_url)
@@ -32,6 +35,7 @@ function emailHtml(t: any, hebDateDisplay: string) {
         <a href="https://dovev-siftei-yeshenim.vercel.app/today" style="display:inline-block;background:#1B2530;color:#EFE7D6;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 26px;border-radius:999px;margin-top:6px;">לגיליון המלא</a>
         <div style="border-top:2px solid #9C7734;margin-top:24px;"></div>
         <div style="font-size:12px;color:#918972;margin-top:12px;">דובב שפתי ישנים · זכר צדיקים לברכה</div>
+        ${unsub}
       </td></tr>
     </table>
   </td></tr></table></body></html>`
@@ -66,14 +70,14 @@ export default async function handler(req: any, res: any) {
     const recipients = (subs || []).map((s: any) => s.email).filter(Boolean)
     if (!recipients.length) { res.status(200).json({ sent: 0, note: 'no subscribers' }); return }
 
-    const html = emailHtml(t, `${gematriya(day)} ${month}`)
     const subject = `${t.popular_name} · ${gematriya(day)} ${month}`
 
-    // Resend batch (max 100 per call)
+    // Resend batch (max 100 per call) — personalised unsubscribe link per recipient
     let sent = 0
     for (let i = 0; i < recipients.length; i += 100) {
       const batch = recipients.slice(i, i + 100).map((to: string) => ({
-        from: process.env.RESEND_FROM, to, subject, html,
+        from: process.env.RESEND_FROM, to, subject,
+        html: emailHtml(t, `${gematriya(day)} ${month}`, to),
       }))
       const r = await fetch('https://api.resend.com/emails/batch', {
         method: 'POST',
