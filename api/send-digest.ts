@@ -87,7 +87,17 @@ export default async function handler(req: any, res: any) {
       if (r.ok) sent += batch.length
       else console.error('Resend error', await r.text())
     }
-    res.status(200).json({ sent, tzaddik: t.popular_name, date: `${gematriya(day)} ${month}` })
+
+    // Also fire the WhatsApp digest with the same cron (best-effort; no-op if unconfigured)
+    let whatsapp: any = null
+    try {
+      const waResp = await fetch(
+        `https://dovev-siftei-yeshenim.vercel.app/api/send-digest-whatsapp?secret=${encodeURIComponent(process.env.CRON_SECRET as string)}`,
+      )
+      whatsapp = await waResp.json().catch(() => null)
+    } catch (e: any) { whatsapp = { error: e?.message } }
+
+    res.status(200).json({ sent, whatsapp, tzaddik: t.popular_name, date: `${gematriya(day)} ${month}` })
   } catch (e: any) {
     res.status(500).json({ error: e.message })
   }
