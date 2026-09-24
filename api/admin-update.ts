@@ -13,11 +13,17 @@ export default async function handler(req: any, res: any) {
   const { password, id, fields, checkOnly } = req.body ?? {}
 
   const envPw = (process.env.ADMIN_PASSWORD ?? '').trim()
+  const writerToken = (process.env.WRITER_TOKEN ?? '').trim()
   if (!envPw) {
     return res.status(401).json({ error: 'env_missing' })
   }
-  if (!password || password.trim() !== envPw) {
-    return res.status(401).json({ error: 'wrong_password', pwLen: envPw.length })
+  const given = (password ?? '').trim()
+  // checkOnly (human login) requires the admin password; writes also accept the
+  // limited WRITER_TOKEN used by the automated daily enrichment agent.
+  const okAdmin = given && given === envPw
+  const okWriter = !checkOnly && writerToken && given === writerToken
+  if (!okAdmin && !okWriter) {
+    return res.status(401).json({ error: 'wrong_password' })
   }
 
   if (checkOnly) return res.json({ ok: true })
