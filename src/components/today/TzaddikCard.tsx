@@ -141,9 +141,8 @@ function furtherReadingLinks(tzaddik: Tzaddik) {
   const name = (tzaddik.fullName || tzaddik.popularName || '').replace(/[–—-].*/, '').replace(/זצ"ל|זצוק"ל|זיע"א/g, '').trim()
   const q = encodeURIComponent(name)
   return [
+    { label: 'חיפוש ברשת', url: `https://www.google.com/search?q=${encodeURIComponent(name + ' סיפור תורה')}` },
     { label: 'ויקיפדיה', url: `https://he.wikipedia.org/w/index.php?search=${q}` },
-    { label: 'החכם היומי', url: `https://www.google.com/search?q=${q}+site:hyomi.org.il` },
-    { label: 'עוד ברשת', url: `https://www.google.com/search?q=${encodeURIComponent(name + ' סיפור תורה')}` },
   ]
 }
 
