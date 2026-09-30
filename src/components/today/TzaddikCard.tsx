@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { Heart, Share2, Copy, BookOpen, Send, Loader2, ExternalLink } from 'lucide-react'
+import { Heart, Copy, BookOpen, Send, Loader2, ExternalLink } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
 import { hebrewDateLabel } from '../../lib/hebrewDate'
@@ -29,12 +29,6 @@ function buildShareText(tzaddik: Tzaddik) {
 
 function shareToWhatsApp(tzaddik: Tzaddik) {
   window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(tzaddik))}`, '_blank', 'noopener,noreferrer')
-}
-
-async function nativeShare(tzaddik: Tzaddik) {
-  const text = buildShareText(tzaddik)
-  if (navigator.share) await navigator.share({ text }).catch(() => {})
-  else await navigator.clipboard.writeText(text).catch(() => {})
 }
 
 async function copyTzaddik(tzaddik: Tzaddik) {
@@ -246,8 +240,6 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
   const [imgError, setImgError] = useState(false)
   const [activeTab, setActiveTab] = useState('teaching')
 
-  const [shareOpen, setShareOpen] = useState(false)
-
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
     setCopied(true)
@@ -381,61 +373,44 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
         </TabsPrimitive.Root>
 
         {/* ── Actions ── */}
-        <div className="flex flex-wrap items-center gap-2 mt-6">
+        <div className="mt-6 space-y-2">
+          {/* Primary: direct WhatsApp share (prominent, one tap) */}
           <button
-            onClick={() => setDeepenOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-gold text-white text-[13.5px] font-semibold shadow-[0_6px_16px_-6px_rgba(91,118,229,.6)] hover:bg-gold-deep transition"
+            onClick={() => shareToWhatsApp(tzaddik)}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25D366] text-white text-[15px] font-bold shadow-[0_8px_20px_-6px_rgba(37,211,102,.55)] hover:bg-[#20bd5a] transition active:scale-[.98]"
           >
-            <BookOpen className="h-4 w-4" />
-            העמק בצדיק
+            <svg viewBox="0 0 24 24" className="h-5 w-5 flex-none" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a8 8 0 01-2.4-1.5 9 9 0 01-1.6-2c-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5s0-.4 0-.5l-1-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.6 2.6 1 2.9.7 3.4.7.5 0 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.1 4.1 4.2-1.1A10 10 0 1012 2z"/></svg>
+            שיתוף בוואטסאפ
           </button>
-          {/* Share popover */}
-          <div className="relative">
+
+          {/* Secondary row */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setShareOpen(o => !o)}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-rule bg-surface-2 text-ink text-[13.5px] font-semibold hover:border-gold/50 transition"
+              onClick={() => setDeepenOpen(true)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold text-white text-[14px] font-semibold hover:bg-gold-deep transition active:scale-[.98]"
             >
-              <Share2 className="h-4 w-4 text-ink-soft" />
-              שתף
+              <BookOpen className="h-4 w-4" />
+              העמק בצדיק
             </button>
-            {shareOpen && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setShareOpen(false)} />
-                <div className="absolute z-20 top-full mt-2 right-0 w-48 rounded-lg bg-surface border border-rule shadow-[0_12px_30px_-12px_var(--shadow)] py-1.5 overflow-hidden">
-                  <button
-                    onClick={() => { shareToWhatsApp(tzaddik); setShareOpen(false) }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
-                  >
-                    <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none" fill="#25D366"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a8 8 0 01-2.4-1.5 9 9 0 01-1.6-2c-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5s0-.4 0-.5l-1-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.6 2.6 1 2.9.7 3.4.7.5 0 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.1 4.1 4.2-1.1A10 10 0 1012 2z"/></svg>
-                    שיתוף לוואטסאפ
-                  </button>
-                  <button
-                    onClick={() => { handleCopy(); setShareOpen(false) }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
-                  >
-                    <Copy className="h-4 w-4 flex-none text-ink-soft" />
-                    {copied ? 'הועתק ✓' : 'העתקת טקסט'}
-                  </button>
-                  <button
-                    onClick={() => { nativeShare(tzaddik); setShareOpen(false) }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] text-ink hover:bg-surface-2 transition text-right"
-                  >
-                    <Share2 className="h-4 w-4 flex-none text-ink-soft" />
-                    שיתוף נוסף
-                  </button>
-                </div>
-              </>
-            )}
+            <button
+              onClick={() => setLiked(toggleLiked(tzaddik.id))}
+              aria-label={liked ? 'נשמר' : 'שמירה'}
+              className={`shrink-0 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition border active:scale-[.98] ${
+                liked ? 'bg-accent-soft text-gold-deep border-[color:var(--line)]' : 'border-rule bg-surface-2 text-ink hover:border-gold/50'
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${liked ? 'fill-current text-gold' : 'text-ink-soft'}`} />
+              {liked ? 'נשמר' : 'שמירה'}
+            </button>
+            <button
+              onClick={handleCopy}
+              aria-label={copied ? 'הועתק' : 'העתקת טקסט'}
+              className="shrink-0 flex items-center justify-center w-11 h-11 rounded-xl border border-rule bg-surface-2 text-ink-soft hover:border-gold/50 transition active:scale-95"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={() => setLiked(toggleLiked(tzaddik.id))}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[13.5px] font-semibold transition border ${
-              liked ? 'bg-gold text-white border-gold' : 'border-rule bg-surface-2 text-ink hover:border-gold/50'
-            }`}
-          >
-            <Heart className={`h-4 w-4 ${liked ? 'fill-current' : 'text-ink-soft'}`} />
-            {liked ? 'נשמר' : 'שמירה'}
-          </button>
+          {copied && <p className="text-center text-[12px] text-gold-deep font-semibold">הטקסט הועתק ✓</p>}
         </div>
       </article>
 

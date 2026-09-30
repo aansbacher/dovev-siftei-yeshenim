@@ -8,108 +8,72 @@ interface TzaddikDeckProps {
 }
 
 /**
- * The day's tzadikim as a clear carousel:
- *  - native scroll-snap so neighbours peek and swiping is smooth (RTL-safe)
- *  - pagination dots (active / inactive)
- *  - persistent high-contrast arrows on desktop
+ * One central tzaddik at a time, with a big, clear slider to move between the
+ * day's tzadikim: large arrows, clear dots, and a "X מתוך Y" label. Swipe works too.
  * Default = the most well-known (index 0).
  */
 export function TzaddikDeck({ tzaddikim }: TzaddikDeckProps) {
   const [i, setI] = useState(0)
-  const scroller = useRef<HTMLDivElement>(null)
-  const slides = useRef<(HTMLDivElement | null)[]>([])
+  const startX = useRef<number | null>(null)
   const ids = tzaddikim.map(t => t.id).join(',')
 
+  useEffect(() => { setI(0) }, [ids])
+
   const n = tzaddikim.length
+  if (!n) return null
+  const go = (x: number) => setI(Math.max(0, Math.min(x, n - 1)))
   const single = n === 1
 
-  // reset to the most-known tzaddik whenever the day changes
-  useEffect(() => {
-    setI(0)
-    requestAnimationFrame(() => slides.current[0]?.scrollIntoView({ inline: 'center', block: 'nearest' }))
-  }, [ids])
-
-  if (!n) return null
-
-  const goTo = (k: number) => {
-    const c = Math.max(0, Math.min(k, n - 1))
-    slides.current[c]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (startX.current === null) return
+    const dx = startX.current - e.changedTouches[0].clientX
+    if (Math.abs(dx) > 45) { dx > 0 ? go(i + 1) : go(i - 1) }
+    startX.current = null
   }
 
-  // keep the active dot in sync with whatever is nearest the centre while swiping
-  const onScroll = () => {
-    const sc = scroller.current
-    if (!sc) return
-    const centre = sc.scrollLeft + sc.clientWidth / 2
-    let best = 0, bestDist = Infinity
-    slides.current.forEach((el, k) => {
-      if (!el) return
-      const c = el.offsetLeft + el.offsetWidth / 2
-      const d = Math.abs(c - centre)
-      if (d < bestDist) { bestDist = d; best = k }
-    })
-    setI(best)
-  }
-
-  const arrow = 'w-11 h-11 rounded-full bg-gold text-white shadow-[0_8px_20px_-6px_rgba(91,118,229,.6)] flex items-center justify-center hover:bg-gold-deep transition disabled:opacity-30 disabled:shadow-none'
+  const bigArrow = 'shrink-0 w-12 h-12 rounded-full bg-gold text-white flex items-center justify-center shadow-[0_8px_20px_-6px_rgba(91,118,229,.6)] hover:bg-gold-deep transition active:scale-95 disabled:opacity-25 disabled:shadow-none'
 
   return (
     <div className="max-w-2xl mx-auto w-full">
-      <div className="relative">
-        {/* ── Persistent arrows (desktop / large screens) ── */}
-        {!single && (
-          <>
-            <button
-              onClick={() => goTo(i + 1)} disabled={i === n - 1} aria-label="הצדיק הבא"
-              className={`hidden md:flex absolute right-[-6px] lg:right-[-20px] top-1/2 -translate-y-1/2 z-20 ${arrow}`}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-            <button
-              onClick={() => goTo(i - 1)} disabled={i === 0} aria-label="הצדיק הקודם"
-              className={`hidden md:flex absolute left-[-6px] lg:left-[-20px] top-1/2 -translate-y-1/2 z-20 ${arrow}`}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-          </>
-        )}
-
-        {/* ── Peeking, snap-scrolling track ── */}
-        <div
-          ref={scroller}
-          onScroll={onScroll}
-          className={`flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${single ? '' : 'gap-3 px-[8%]'}`}
-        >
-          {tzaddikim.map((t, k) => (
-            <div
-              key={t.id}
-              ref={el => { slides.current[k] = el }}
-              className={`snap-center shrink-0 ${single ? 'w-full' : 'w-[84%]'} transition-opacity duration-300 ${k === i ? 'opacity-100' : 'opacity-50'}`}
-            >
-              <TzaddikCard tzaddik={t} variant="main" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Pagination dots ── */}
+      {/* ── Big, clear slider control ── */}
       {!single && (
-        <div className="flex items-center justify-center gap-1.5 mt-4" role="tablist">
-          {tzaddikim.map((_, k) => (
-            <button
-              key={k}
-              onClick={() => goTo(k)}
-              aria-label={`צדיק ${k + 1}`}
-              aria-selected={k === i}
-              className={`h-2 rounded-full transition-all duration-300 ${k === i ? 'w-7 bg-gold' : 'w-2 bg-[color:var(--line)] hover:bg-gold/40'}`}
-            />
-          ))}
+        <div className="flex items-center justify-between gap-3 mb-4 select-none">
+          <button onClick={() => go(i - 1)} disabled={i === 0} aria-label="הצדיק הקודם" className={bigArrow}>
+            <ChevronRight className="w-7 h-7" />
+          </button>
+
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2" role="tablist">
+              {tzaddikim.map((_, k) => (
+                <button
+                  key={k}
+                  onClick={() => go(k)}
+                  aria-label={`צדיק ${k + 1}`}
+                  aria-selected={k === i}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${k === i ? 'w-8 bg-gold' : 'w-2.5 bg-[color:var(--line)] hover:bg-gold/40'}`}
+                />
+              ))}
+            </div>
+            <span className="text-[13px] font-bold text-ink-soft">צדיק {i + 1} מתוך {n}</span>
+          </div>
+
+          <button onClick={() => go(i + 1)} disabled={i === n - 1} aria-label="הצדיק הבא" className={bigArrow}>
+            <ChevronLeft className="w-7 h-7" />
+          </button>
         </div>
       )}
 
+      {/* ── The central card ── */}
+      <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div key={tzaddikim[i].id} className="dsy-slidein">
+          <TzaddikCard tzaddik={tzaddikim[i]} variant="main" />
+        </div>
+      </div>
+
       {!single && (
-        <p className="text-center text-[12px] text-muted mt-2.5">
-          {i + 1} מתוך {n} · החליקו לדפדוף בין צדיקי היום
+        <p className="text-center text-[12px] text-muted mt-3.5">
+          החליקו הצידה או הקישו על החצים לדפדוף בין צדיקי היום
         </p>
       )}
     </div>
