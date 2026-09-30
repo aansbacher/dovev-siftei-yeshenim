@@ -32,7 +32,7 @@ export function Today() {
   )
 
   return (
-    <div className="grid gap-4 sm:gap-6 pb-10">
+    <div className="grid grid-cols-1 gap-4 sm:gap-6 pb-10">
       {/* Masthead */}
       <HebrewDateBlock
         hebrewDateDisplay={hebrew.hebrewDateDisplay}
