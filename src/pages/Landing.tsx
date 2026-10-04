@@ -70,6 +70,37 @@ export function Landing() {
         </div>
       </section>
 
+      {/* ── מה פירוש השם? מעלת "דובב שפתי ישנים" ── */}
+      <section className="relative overflow-hidden rounded-[22px] bg-surface border border-rule shadow-[0_8px_24px_-14px_var(--shadow)] px-6 py-7">
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(120% 80% at 50% -20%, #FCEFD6 0%, transparent 62%)' }}
+        />
+        <div className="relative">
+          <p className="text-[12.5px] font-semibold tracking-wide text-gold text-center">מה פירוש השם?</p>
+          <h2 className="font-display text-[23px] text-ink text-center mt-1.5 leading-tight">דּוֹבֵב שִׂפְתֵי יְשֵׁנִים</h2>
+          <p className="text-center text-[12px] text-muted mt-1">שיר השירים ז, י</p>
+
+          <div className="mt-4 rounded-2xl bg-surface-2 px-5 py-4 text-center">
+            <p className="text-[14.5px] leading-[1.9] text-ink">
+              "כל תלמיד חכם שאומרים דבר שמועה מפיו בעולם הזה — שפתותיו דובבות בקבר"
+            </p>
+            <p className="text-[12px] text-muted mt-2">תלמוד בבלי, יבמות צז ע"א</p>
+          </div>
+
+          <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-4">
+            כשאנו לומדים את תורתם של הצדיקים ומזכירים את מעשיהם ביום הילולתם — אנו{' '}
+            <span className="font-bold text-ink">מדובבים את שפתיהם</span>. שפתותיהם רוחשות בקבר, נשמתם מתעלה,
+            והם שבים ומאירים את דרכנו. זו מעלה עצומה — גם להם וגם לנו.
+          </p>
+          <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-3">
+            יום פטירתו של צדיק הוא "יום הילולא" — עת רצון שבה כל תורתו ומעשיו מתעלים, וראוי לחבר אליו את הלב.
+            לכן, בכל יום מחדש, אנו עוצרים לרגע עם בעל ההילולה של היום, אומרים מתורתו, ומדובבים את שפתיו.
+          </p>
+        </div>
+      </section>
+
       {/* secondary link to today */}
       <Link
         to="/today"
