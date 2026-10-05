@@ -32,7 +32,7 @@ export default {
       fontFamily: {
         sans:    ['Rubik', 'Heebo', 'sans-serif'],
         heading: ['Rubik', 'Heebo', 'sans-serif'],
-        display: ['Rubik', 'Heebo', 'sans-serif'],
+        display: ['"Frank Ruhl Libre"', 'Rubik', 'Heebo', 'serif'],
         serif:   ['"Frank Ruhl Libre"', 'Georgia', 'serif'],
       },
       borderRadius: {

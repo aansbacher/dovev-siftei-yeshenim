@@ -56,7 +56,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Rubik', 'Heebo', sans-serif; }
 #root { min-height: 100vh; }
 
 /* friendly rounded display (joyful, not formal) */
-.font-display { font-family: 'Rubik', 'Heebo', sans-serif; font-weight: 800; letter-spacing: -0.01em; }
+.font-display { font-family: 'Frank Ruhl Libre', 'Rubik', 'Heebo', serif; font-weight: 700; letter-spacing: 0; }
 /* optional serif reading face */
 .font-serif-read { font-family: 'Frank Ruhl Libre', Georgia, serif; }
 
