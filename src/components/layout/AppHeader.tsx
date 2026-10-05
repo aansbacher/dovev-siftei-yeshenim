@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { to: '/',         label: 'דף הבית' },
-  { to: '/today',    label: 'קדושים בכל יום' },
-  { to: '/subscribe',label: 'הירשם לעדכונים' },
-  { to: '/about',    label: 'אודות' },
+  { to: '/',      label: 'דף הבית' },
+  { to: '/today', label: 'הצדיק של היום' },
+  { to: '/about', label: 'אודות' },
 ]
 
 export function AppHeader() {
@@ -21,7 +20,7 @@ export function AppHeader() {
             className="font-display text-lg font-bold text-ink leading-tight"
             style={{ letterSpacing: '-0.01em' }}
           >
-            דובב שפתי ישנים
+            קדושים בכל יום
           </Link>
 
           {/* Desktop nav */}
@@ -62,7 +61,7 @@ export function AppHeader() {
           className={`absolute inset-y-0 right-0 w-72 bg-surface flex flex-col shadow-2xl transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
         >
           <div className="flex items-center justify-between px-5 pt-5 pb-6 border-b border-rule">
-            <span className="font-display text-lg font-bold text-ink">דובב שפתי ישנים</span>
+            <span className="font-display text-lg font-bold text-ink">קדושים בכל יום</span>
             <button
               onClick={() => setOpen(false)}
               className="p-2 text-muted hover:text-ink transition"

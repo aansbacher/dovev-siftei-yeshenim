@@ -10,7 +10,8 @@ export function Footer() {
         >
           הַצִּיעוּ צַדִּיק אוֹ הוֹסִיפוּ מֵידָע
         </Link>
-        <div className="mt-4 text-xs text-muted">זכר צדיקים לברכה · דובב שפתי ישנים</div>
+        <div className="mt-4 text-xs text-muted">זכר צדיקים לברכה · קדושים בכל יום</div>
+        <div className="mt-0.5 text-[10px] text-muted/70">דּוֹבֵב שִׂפְתֵי יְשֵׁנִים</div>
         <span className="block mt-1 text-muted/60 text-[10px]">v2.1</span>
       </div>
     </footer>

@@ -24,7 +24,7 @@ function buildShareText(tzaddik: Tzaddik) {
   const body = tzaddik.quote
     ? `״${tzaddik.quote}״\n${tzaddik.popularName}`
     : tzaddik.popularName
-  return `${body}\n\nמתוך "דובב שפתי ישנים"\n${window.location.href}`
+  return `${body}\n\nמתוך "קדושים בכל יום"\n${window.location.href}`
 }
 
 function shareToWhatsApp(tzaddik: Tzaddik) {
@@ -116,9 +116,8 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
 // ── Main full card ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { value: 'teaching', label: 'מתורתו',  key: 'torah' as const,     empty: 'אין תורה זמינה' },
-  { value: 'story',    label: 'סיפור',   key: 'story' as const,     empty: 'אין סיפור זמין' },
-  { value: 'bio',      label: 'מי היה',  key: 'biography' as const, empty: 'אין רקע זמין' },
+  { value: 'story',    label: 'סיפור',  key: 'story' as const, empty: 'אין סיפור זמין' },
+  { value: 'teaching', label: 'מתורתו', key: 'torah' as const, empty: 'אין תורה זמינה' },
 ]
 
 function SectionHead({ children }: { children: React.ReactNode }) {
@@ -238,7 +237,7 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
   const [copied, setCopied] = useState(false)
   const [deepenOpen, setDeepenOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
-  const [activeTab, setActiveTab] = useState('teaching')
+  const [activeTab, setActiveTab] = useState('story')
 
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)

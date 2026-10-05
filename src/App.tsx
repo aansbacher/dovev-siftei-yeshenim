@@ -3,6 +3,7 @@ import { AppHeader } from './components/layout/AppHeader'
 import { BottomNav } from './components/layout/BottomNav'
 import { Footer } from './components/layout/Footer'
 import { Landing } from './pages/Landing'
+import { About } from './pages/About'
 import { Today } from './pages/Today'
 import { Suggest } from './pages/Suggest'
 import { Search } from './pages/Search'
@@ -15,6 +16,7 @@ function AppLayout() {
       <main className="mx-auto w-full max-w-lg px-3 py-5 pb-28 sm:px-4 sm:py-8 md:pb-8 lg:max-w-5xl lg:px-8 lg:py-10">
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
           <Route path="/today" element={<Today />} />
           <Route path="/search" element={<Search />} />
           <Route path="/suggest" element={<Suggest />} />

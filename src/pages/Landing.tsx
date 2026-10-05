@@ -3,38 +3,32 @@ import { BookOpen, ArrowLeft } from 'lucide-react'
 import { getHebrewDate } from '../lib/hebrewDate'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
 
-/** Warm, inviting home screen: greeting + dreamy hero + "where you arrived". */
+/** Warm, representative home: brand hero, a short teaser that leads to the About page. */
 export function Landing() {
   const hebrew = getHebrewDate(new Date())
 
   return (
     <div className="grid gap-5 pb-6">
-      {/* ── Warm hero greeting ── */}
+      {/* ── Brand hero ── */}
       <section className="relative overflow-hidden rounded-[26px] border border-rule shadow-[0_14px_40px_-16px_var(--shadow)] bg-surface">
-        {/* soft glowing gradient */}
         <div
           aria-hidden
           className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(120% 90% at 50% -10%, #FCEFD6 0%, #EEF0FD 42%, #FFFFFF 78%)',
-          }}
+          style={{ background: 'radial-gradient(120% 90% at 50% -10%, #FCEFD6 0%, #EEF0FD 42%, #FFFFFF 78%)' }}
         />
         <div className="relative px-6 pt-8 pb-7 text-center flex flex-col items-center">
           <HeroArt />
-          <p className="mt-1 text-[13px] font-semibold tracking-wide text-gold">ברוכים הבאים</p>
-          <h1 className="font-display text-[30px] leading-tight text-ink mt-1">דובב שפתי ישנים</h1>
-          <p className="mt-2 text-[14px] text-ink-soft max-w-[19rem] leading-relaxed">
-            מסע יומי קטן אל אור הצדיקים, סיפור ותורה מבעל ההילולה של היום.
+          <p className="mt-1 text-[12.5px] font-semibold tracking-[0.12em] text-gold">דּוֹבֵב שִׂפְתֵי יְשֵׁנִים</p>
+          <h1 className="font-display text-[32px] leading-tight text-ink mt-1.5">קדושים בכל יום</h1>
+          <p className="mt-2.5 text-[14px] text-ink-soft max-w-[20rem] leading-relaxed">
+            מסע יומי אל אור הצדיקים. בכל יום, סיפור ופנינה מתורתו של בעל ההילולא של היום.
           </p>
 
-          {/* today's date pill */}
           <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-surface-2 px-4 py-1.5 text-[13px] font-semibold text-ink-soft">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" />
             היום, {hebrew.hebrewDateDisplay}
           </div>
 
-          {/* CTA */}
           <Link
             to="/today"
             className="mt-5 w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-gold text-white font-bold text-[15px] py-3.5 shadow-[0_10px_24px_-8px_rgba(91,118,229,.65)] hover:bg-gold-deep transition active:scale-[.99]"
@@ -45,70 +39,37 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── Where you arrived ── */}
-      <section className="rounded-[22px] bg-surface border border-rule shadow-[0_8px_24px_-14px_var(--shadow)] px-6 py-6">
-        <h2 className="font-display text-[19px] text-ink mb-2.5">לאן הגעת?</h2>
-        <p className="text-[14.5px] leading-[1.85] text-ink-soft">
-          בכל יום בשנה מציינים את יום ההילולה של צדיקים וגדולי ישראל שהאירו את העולם בתורתם ובמעשיהם.
-          כאן, בכל יום מחדש, תפגשו את בעל ההילולה של היום, סיפור נוגע ללב, פנינה מתורתו ואמרה שנשארת בלב.
-        </p>
-        <p className="text-[14.5px] leading-[1.85] text-ink-soft mt-3">
-          כמה דקות ביום, להתחבר למסורת, לחכמת הדורות ולצדיקי האמת.
-        </p>
-
-        <div className="mt-5 grid grid-cols-3 gap-2.5">
-          {[
-            { title: 'מאומת', desc: 'רק ממקורות אמינים' },
-            { title: 'אנושי', desc: 'נכתב בקפידה, לא אוטומט' },
-            { title: 'קצר ונעים', desc: 'כמה דקות ביום' },
-          ].map(({ title, desc }) => (
-            <div key={title} className="text-center px-2 py-3 rounded-2xl bg-surface-2">
-              <p className="text-[13px] font-bold text-ink leading-tight">{title}</p>
-              <p className="text-[11px] text-muted mt-1 leading-tight">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── מה פירוש השם? מעלת "דובב שפתי ישנים" ── */}
-      <section className="relative overflow-hidden rounded-[22px] bg-surface border border-rule shadow-[0_8px_24px_-14px_var(--shadow)] px-6 py-7">
+      {/* ── Short "why" teaser → About ── */}
+      <Link
+        to="/about"
+        className="group relative overflow-hidden rounded-[22px] bg-surface border border-rule shadow-[0_8px_24px_-14px_var(--shadow)] px-6 py-6 hover:border-gold/40 transition active:scale-[0.99]"
+      >
         <div
           aria-hidden
           className="absolute inset-0"
           style={{ background: 'radial-gradient(120% 80% at 50% -20%, #FCEFD6 0%, transparent 62%)' }}
         />
         <div className="relative">
-          <p className="text-[12.5px] font-semibold tracking-wide text-gold text-center">מה פירוש השם?</p>
-          <h2 className="font-display text-[23px] text-ink text-center mt-1.5 leading-tight">דּוֹבֵב שִׂפְתֵי יְשֵׁנִים</h2>
-          <p className="text-center text-[12px] text-muted mt-1">שיר השירים ז, י</p>
-
-          <div className="mt-4 rounded-2xl bg-surface-2 px-5 py-4 text-center">
-            <p className="text-[14.5px] leading-[1.9] text-ink">
-              "כל תלמיד חכם שאומרים דבר שמועה מפיו בעולם הזה — שפתותיו דובבות בקבר"
-            </p>
-            <p className="text-[12px] text-muted mt-2">תלמוד בבלי, יבמות צז ע"א</p>
-          </div>
-
-          <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-4">
-            כשאנו לומדים את תורתם של הצדיקים ומזכירים את מעשיהם ביום הילולתם — אנו{' '}
-            <span className="font-bold text-ink">מדובבים את שפתיהם</span>. שפתותיהם רוחשות בקבר, נשמתם מתעלה,
-            והם שבים ומאירים את דרכנו. זו מעלה עצומה — גם להם וגם לנו.
+          <h2 className="font-display text-[19px] text-ink leading-tight">למה מזכירים את הצדיקים?</h2>
+          <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-2">
+            כשלומדים את תורתם של הצדיקים ואומרים אותה, שפתותיהם רוחשות בקבר. אנו מדובבים את שפתיהם,
+            וזו מעלה גדולה להם ולנו.
           </p>
-          <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-3">
-            יום פטירתו של צדיק הוא "יום הילולא" — עת רצון שבה כל תורתו ומעשיו מתעלים, וראוי לחבר אליו את הלב.
-            לכן, בכל יום מחדש, אנו עוצרים לרגע עם בעל ההילולה של היום, אומרים מתורתו, ומדובבים את שפתיו.
-          </p>
+          <span className="mt-3 inline-flex items-center gap-1.5 text-[13.5px] font-bold text-gold-deep group-hover:gap-2.5 transition-all">
+            קראו על הרעיון שמאחורי האתר
+            <ArrowLeft className="w-4 h-4" />
+          </span>
         </div>
-      </section>
+      </Link>
 
-      {/* secondary link to today */}
+      {/* ── Secondary link to today ── */}
       <Link
         to="/today"
         className="flex items-center justify-between rounded-[22px] bg-surface border border-rule px-5 py-4 shadow-[0_8px_24px_-14px_var(--shadow)] hover:border-gold/40 transition active:scale-[0.99]"
       >
         <div>
-          <p className="font-bold text-ink text-[15px]">קדושים בכל יום</p>
-          <p className="text-[13px] text-muted mt-0.5">גלו את בעלי ההילולה של כל יום בשנה</p>
+          <p className="font-bold text-ink text-[15px]">הצדיק של היום</p>
+          <p className="text-[13px] text-muted mt-0.5">גלו את בעלי ההילולא של כל יום בשנה</p>
         </div>
         <ArrowLeft className="w-5 h-5 text-gold" />
       </Link>
@@ -141,18 +102,12 @@ function HeroArt() {
           <stop offset="100%" stopColor="#E6EAFC" />
         </linearGradient>
       </defs>
-
-      {/* warm halo */}
       <circle cx="94" cy="60" r="74" fill="url(#glow)" />
-
-      {/* rising light rays */}
       <g opacity="0.9">
         <path d="M94 84 L86 26 L102 26 Z" fill="url(#ray)" />
         <path d="M94 84 L64 34 L78 30 Z" fill="url(#ray)" opacity="0.6" />
         <path d="M94 84 L124 34 L110 30 Z" fill="url(#ray)" opacity="0.6" />
       </g>
-
-      {/* sparkles */}
       <g fill="#E7B85C">
         <path d="M70 26 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6 z" opacity="0.9" />
         <path d="M124 22 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2 z" opacity="0.8" />
@@ -160,12 +115,9 @@ function HeroArt() {
         <circle cx="60" cy="48" r="1.6" opacity="0.6" />
         <circle cx="132" cy="50" r="1.6" opacity="0.6" />
       </g>
-
-      {/* open book */}
       <g>
         <path d="M94 88 C78 78 56 78 34 84 L34 126 C56 120 78 120 94 128 Z" fill="url(#pageL)" stroke="#C9D2F2" strokeWidth="1.5" strokeLinejoin="round" />
         <path d="M94 88 C110 78 132 78 154 84 L154 126 C132 120 110 120 94 128 Z" fill="url(#pageR)" stroke="#C9D2F2" strokeWidth="1.5" strokeLinejoin="round" />
-        {/* text lines */}
         <g stroke="#B9C3EC" strokeWidth="1.4" strokeLinecap="round" opacity="0.8">
           <line x1="46" y1="94" x2="82" y2="90" />
           <line x1="46" y1="101" x2="82" y2="97" />
