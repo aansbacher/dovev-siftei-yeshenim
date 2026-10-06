@@ -140,6 +140,32 @@ function furtherReadingLinks(tzaddik: Tzaddik) {
   ]
 }
 
+/** Renders a story that may hold several titled sub-stories (lines starting with "### "). */
+function StoryContent({ text, className = '' }: { text: string; className?: string }) {
+  if (!/^###\s/m.test(text)) {
+    return <p className={`whitespace-pre-wrap read-text ${className}`}>{text}</p>
+  }
+  const blocks = text.split(/\n(?=###\s)/g).map(b => b.trim()).filter(Boolean)
+  return (
+    <div className="space-y-5">
+      {blocks.map((block, i) => {
+        const m = block.match(/^###\s+(.+?)\n([\s\S]*)$/)
+        const title = m ? m[1].trim() : block.replace(/^###\s+/, '').trim()
+        const body = m ? m[2].trim() : ''
+        return (
+          <div key={i}>
+            <h5 className="font-display text-[15.5px] font-bold text-warm-deep mb-2 flex items-center gap-2">
+              <span className="h-3.5 w-1 rounded-full bg-warm shrink-0" />
+              {title}
+            </h5>
+            {body && <p className={`whitespace-pre-wrap read-text ${className}`}>{body}</p>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
   const links = furtherReadingLinks(tzaddik)
   return (
@@ -157,7 +183,7 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
       {tzaddik.story && (
         <div>
           <SectionHead>הַסִּפּוּר</SectionHead>
-          <p className="read-text text-ink-soft whitespace-pre-wrap">{tzaddik.story}</p>
+          <StoryContent text={tzaddik.story} className="text-ink-soft" />
         </div>
       )}
 
@@ -365,7 +391,9 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
                 className="pt-4 min-h-[5rem] text-ink-soft"
               >
                 {content
-                  ? <p className="whitespace-pre-wrap read-text">{content}</p>
+                  ? (key === 'story'
+                      ? <StoryContent text={content} />
+                      : <p className="whitespace-pre-wrap read-text">{content}</p>)
                   : <span className="italic text-muted">{empty}</span>}
               </TabsPrimitive.Content>
             )
