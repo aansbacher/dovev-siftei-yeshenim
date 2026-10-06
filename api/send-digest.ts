@@ -14,7 +14,7 @@ function esc(s: string) {
 
 function emailHtml(t: any, hebDateDisplay: string, unsubEmail?: string) {
   const unsub = unsubEmail
-    ? `<div style="font-size:11px;color:#B3AC98;margin-top:8px;"><a href="https://dovev-siftei-yeshenim.vercel.app/api/unsubscribe?scope=email&email=${encodeURIComponent(unsubEmail)}" style="color:#B3AC98;">הסרה מהדיוור</a></div>`
+    ? `<div style="font-size:11px;color:#B3AC98;margin-top:8px;"><a href="https://www.kedoshim.org.il/api/unsubscribe?scope=email&email=${encodeURIComponent(unsubEmail)}" style="color:#B3AC98;">הסרה מהדיוור</a></div>`
     : ''
   const quote = t.quote ? `<p style="font-family:Georgia,serif;font-size:19px;line-height:1.7;color:#1B2530;margin:0 0 14px;">״${esc(t.quote)}״</p>` : ''
   const bio = t.biography ? `<p style="font-size:15px;line-height:1.8;color:#4C5560;margin:0 0 18px;">${esc(t.biography)}</p>` : ''
@@ -32,7 +32,7 @@ function emailHtml(t: any, hebDateDisplay: string, unsubEmail?: string) {
         <h1 style="font-family:Georgia,serif;font-size:24px;color:#1B2530;margin:0 0 14px;">${esc(t.popular_name)}</h1>
         ${quote}
         ${bio}
-        <a href="https://dovev-siftei-yeshenim.vercel.app/today" style="display:inline-block;background:#1B2530;color:#EFE7D6;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 26px;border-radius:999px;margin-top:6px;">לגיליון המלא</a>
+        <a href="https://www.kedoshim.org.il/today" style="display:inline-block;background:#1B2530;color:#EFE7D6;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 26px;border-radius:999px;margin-top:6px;">לגיליון המלא</a>
         <div style="border-top:2px solid #9C7734;margin-top:24px;"></div>
         <div style="font-size:12px;color:#918972;margin-top:12px;">דובב שפתי ישנים · זכר צדיקים לברכה</div>
         ${unsub}
@@ -92,7 +92,7 @@ export default async function handler(req: any, res: any) {
     let whatsapp: any = null
     try {
       const waResp = await fetch(
-        `https://dovev-siftei-yeshenim.vercel.app/api/send-digest-whatsapp?secret=${encodeURIComponent(process.env.CRON_SECRET as string)}`,
+        `https://www.kedoshim.org.il/api/send-digest-whatsapp?secret=${encodeURIComponent(process.env.CRON_SECRET as string)}`,
       )
       whatsapp = await waResp.json().catch(() => null)
     } catch (e: any) { whatsapp = { error: e?.message } }

@@ -13,7 +13,7 @@ function page(title: string, body: string) {
       <div style="font-size:40px;margin-bottom:8px;">🕯️</div>
       <h1 style="font-size:20px;color:#2A3350;margin:0 0 10px;">${title}</h1>
       <p style="font-size:15px;line-height:1.7;color:#5B6480;margin:0 0 20px;">${body}</p>
-      <a href="https://dovev-siftei-yeshenim.vercel.app/" style="display:inline-block;background:#5B76E5;color:#fff;text-decoration:none;font-weight:bold;font-size:14px;padding:10px 24px;border-radius:999px;">חזרה לאתר</a>
+      <a href="https://www.kedoshim.org.il/" style="display:inline-block;background:#5B76E5;color:#fff;text-decoration:none;font-weight:bold;font-size:14px;padding:10px 24px;border-radius:999px;">חזרה לאתר</a>
       <div style="font-size:12px;color:#98A0B8;margin-top:22px;">דובב שפתי ישנים · זכר צדיקים לברכה</div>
     </div>
   </body></html>`

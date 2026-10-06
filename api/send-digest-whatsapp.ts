@@ -11,7 +11,7 @@
 //
 // The template must have a BODY with three variables, e.g.:
 //   בעל ההילולה של היום: {{1}} · {{2}}
-//   לגיליון המלא: dovev-siftei-yeshenim.vercel.app/today
+//   לגיליון המלא: www.kedoshim.org.il/today
 //   להסרה מהדיוור: {{3}}
 // ({{1}} = name, {{2}} = Hebrew date, {{3}} = personal unsubscribe link)
 import { createClient } from '@supabase/supabase-js'
@@ -75,7 +75,7 @@ export default async function handler(req: any, res: any) {
     for (const raw of phones) {
       const to = normalizePhone(raw)
       if (!to) { failed++; continue }
-      const unsub = `dovev-siftei-yeshenim.vercel.app/api/unsubscribe?scope=whatsapp&phone=${encodeURIComponent(raw)}`
+      const unsub = `www.kedoshim.org.il/api/unsubscribe?scope=whatsapp&phone=${encodeURIComponent(raw)}`
       const body = {
         messaging_product: 'whatsapp',
         to,

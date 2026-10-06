@@ -24,7 +24,7 @@ function buildShareText(tzaddik: Tzaddik) {
   const body = tzaddik.quote
     ? `״${tzaddik.quote}״\n${tzaddik.popularName}`
     : tzaddik.popularName
-  return `${body}\n\nמתוך "קדושים בכל יום"\n${window.location.href}`
+  return `${body}\n\nמתוך "קדושים בכל יום"\nhttps://www.kedoshim.org.il/today`
 }
 
 function shareToWhatsApp(tzaddik: Tzaddik) {
@@ -116,8 +116,9 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
 // ── Main full card ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { value: 'story',    label: 'סיפור',  key: 'story' as const, empty: 'אין סיפור זמין' },
-  { value: 'teaching', label: 'מתורתו', key: 'torah' as const, empty: 'אין תורה זמינה' },
+  { value: 'story',    label: 'סיפור',  key: 'story' as const,     empty: 'אין סיפור זמין' },
+  { value: 'teaching', label: 'מתורתו', key: 'torah' as const,     empty: 'אין תורה זמינה' },
+  { value: 'bio',      label: 'מי היה', key: 'biography' as const, empty: 'אין רקע זמין' },
 ]
 
 function SectionHead({ children }: { children: React.ReactNode }) {
