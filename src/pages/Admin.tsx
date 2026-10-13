@@ -66,10 +66,175 @@ function rowToForm(t: TzaddikRow): FormData {
   }
 }
 
+function ModeBar({ mode, setMode, onLogout }: { mode: string; setMode: (m: 'intake' | 'edit') => void; onLogout: () => void }) {
+  const btn = (active: boolean): React.CSSProperties => ({ padding: '7px 14px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, background: active ? '#1E2A38' : '#edf2f7', color: active ? '#F7F3EA' : '#4a5568' })
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid #e2e8f0', background: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
+      <button onClick={() => setMode('intake')} style={btn(mode === 'intake')}>הזנת תוכן</button>
+      <button onClick={() => setMode('edit')} style={btn(mode === 'edit')}>עריכה ידנית</button>
+      <button onClick={onLogout} style={{ marginInlineStart: 'auto', padding: '7px 12px', borderRadius: 7, border: '1px solid #cbd5e0', background: '#fff', cursor: 'pointer', fontSize: 13, color: '#718096' }}>יציאה</button>
+    </div>
+  )
+}
+
+/** Mobile-first content intake: pick a tzaddik (or new), paste text and/or upload photos → queued for processing. */
+function Intake() {
+  const [existing, setExisting] = useState(true)
+  const [q, setQ] = useState('')
+  const [results, setResults] = useState<{ id: number; popular_name: string; hebrew_month: string | null; hebrew_day: number | null }[]>([])
+  const [picked, setPicked] = useState<{ id: number; name: string } | null>(null)
+  const [newName, setNewName] = useState('')
+  const [newMonth, setNewMonth] = useState('')
+  const [newDay, setNewDay] = useState('')
+  const [note, setNote] = useState('')
+  const [text, setText] = useState('')
+  const [images, setImages] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!existing || q.trim().length < 2) { setResults([]); return }
+    const t = setTimeout(async () => {
+      const { data } = await supabase.from('tzaddikim').select('id,popular_name,hebrew_month,hebrew_day').ilike('popular_name', `%${q.trim()}%`).limit(8)
+      setResults((data ?? []) as typeof results)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [q, existing])
+
+  async function addImage(file: File) {
+    setUploading(true); setMsg(null)
+    try {
+      const pw = sessionStorage.getItem(PW_KEY) ?? ''
+      const base64 = await fileToBase64(file)
+      const res = await fetch('/api/admin-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw, base64, filename: file.name }) })
+      const data = await res.json()
+      if (res.ok && data.url) setImages(prev => [...prev, data.url as string])
+      else setMsg({ text: `שגיאת העלאה: ${data.error}`, ok: false })
+    } catch (e) { setMsg({ text: `שגיאה: ${e instanceof Error ? e.message : 'unknown'}`, ok: false }) }
+    setUploading(false)
+  }
+
+  async function submit() {
+    if (existing && !picked) { setMsg({ text: 'בחרו צדיק קיים', ok: false }); return }
+    if (!existing && !newName.trim()) { setMsg({ text: 'הזינו שם צדיק', ok: false }); return }
+    if (!text.trim() && images.length === 0) { setMsg({ text: 'הוסיפו טקסט או תמונה', ok: false }); return }
+    setBusy(true); setMsg(null)
+    try {
+      const content = [
+        note.trim() && `הערה: ${note.trim()}`,
+        text.trim(),
+        images.length > 0 && 'תמונות:\n' + images.join('\n'),
+      ].filter(Boolean).join('\n\n')
+      const { error } = await supabase.from('suggestions').insert({
+        type: existing ? 'add_info' : 'new_tzaddik',
+        tzaddik_id: existing ? picked!.id : null,
+        tzaddik_name: existing ? picked!.name : newName.trim(),
+        hebrew_date: existing ? null : (`${newDay} ${newMonth}`.trim() || null),
+        content,
+        sources: 'הזנה מהאדמין',
+        submitter_name: 'admin',
+      })
+      if (error) throw error
+      setMsg({ text: 'נשלח בהצלחה ✓ ייכנס לעיבוד', ok: true })
+      setText(''); setNote(''); setImages([]); setPicked(null); setQ(''); setNewName(''); setNewMonth(''); setNewDay('')
+    } catch (e) { setMsg({ text: `שגיאה: ${e instanceof Error ? e.message : 'unknown'}`, ok: false }) }
+    setBusy(false)
+  }
+
+  const inp: React.CSSProperties = { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid #cbd5e0', fontSize: 16, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', background: '#fff' }
+  const lbl: React.CSSProperties = { display: 'block', fontSize: 13, fontWeight: 700, marginBottom: 6, color: '#2d3748' }
+  const toggle = (active: boolean): React.CSSProperties => ({ flex: 1, padding: '10px', borderRadius: 10, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 14, background: active ? '#1E2A38' : '#edf2f7', color: active ? '#fff' : '#4a5568' })
+
+  return (
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '20px 16px 60px' }}>
+      <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1E2A38', margin: '4px 0 4px' }}>הזנת תוכן</h1>
+      <p style={{ fontSize: 14, color: '#718096', margin: '0 0 20px', lineHeight: 1.6 }}>הוסיפו טקסט או צילום של סיפור/דיוקן. התוכן ייכנס לעיבוד: שכתוב לפורמט האתר, אימות והכנסה.</p>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button onClick={() => setExisting(true)} style={toggle(existing)}>צדיק קיים</button>
+        <button onClick={() => setExisting(false)} style={toggle(!existing)}>צדיק חדש</button>
+      </div>
+
+      {existing ? (
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>חיפוש צדיק</label>
+          {picked ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 10, background: '#ebf4ff', border: '1px solid #bee3f8' }}>
+              <span style={{ fontWeight: 700, color: '#1E2A38' }}>{picked.name}</span>
+              <button onClick={() => { setPicked(null); setQ('') }} style={{ background: 'none', border: 'none', color: '#3182ce', cursor: 'pointer', fontSize: 14 }}>שנה</button>
+            </div>
+          ) : (
+            <>
+              <input style={inp} placeholder="הקלידו שם..." value={q} onChange={e => setQ(e.target.value)} />
+              {results.length > 0 && (
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, marginTop: 6, overflow: 'hidden', background: '#fff' }}>
+                  {results.map(r => (
+                    <div key={r.id} onClick={() => { setPicked({ id: r.id, name: r.popular_name }); setResults([]) }} style={{ padding: '11px 14px', cursor: 'pointer', borderBottom: '1px solid #f0f4f8', fontSize: 14 }}>
+                      {r.popular_name} <span style={{ color: '#a0aec0', fontSize: 12 }}>· {r.hebrew_month} {r.hebrew_day}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>שם הצדיק החדש</label>
+          <input style={{ ...inp, marginBottom: 10 }} placeholder="לדוגמה: רבי..." value={newName} onChange={e => setNewName(e.target.value)} />
+          <div style={{ display: 'flex', gap: 10 }}>
+            <select style={{ ...inp, flex: 2 }} value={newMonth} onChange={e => setNewMonth(e.target.value)}>
+              <option value="">חודש פטירה</option>
+              {HEBREW_MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+            <input style={{ ...inp, flex: 1 }} type="number" min={1} max={30} placeholder="יום" value={newDay} onChange={e => setNewDay(e.target.value)} />
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginBottom: 16 }}>
+        <label style={lbl}>טקסט (הדביקו סיפור / וורט / מידע)</label>
+        <textarea rows={6} style={{ ...inp, resize: 'vertical', lineHeight: 1.6 }} value={text} onChange={e => setText(e.target.value)} placeholder="אפשר להשאיר ריק אם מעלים רק תמונה" />
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <label style={lbl}>תמונות (צילום של סיפור מספר / צילום מסך / דיוקן)</label>
+        <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) addImage(f); e.target.value = '' }} />
+        <button onClick={() => fileRef.current?.click()} disabled={uploading} style={{ width: '100%', padding: '14px', borderRadius: 10, border: '2px dashed #cbd5e0', background: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#4a5568' }}>
+          {uploading ? 'מעלה...' : '+ הוספת תמונה'}
+        </button>
+        {images.length > 0 && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+            {images.map((u, i) => (
+              <div key={i} style={{ position: 'relative' }}>
+                <img src={u} alt="" style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #e2e8f0' }} />
+                <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, insetInlineEnd: -6, width: 20, height: 20, borderRadius: '50%', background: '#e53e3e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, lineHeight: '20px', padding: 0 }}>✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label style={lbl}>הערה (אופציונלי)</label>
+        <input style={inp} placeholder={'לדוגמה: "לשכתב", "להוסיף סיפור", "זה הדיוקן שלו"'} value={note} onChange={e => setNote(e.target.value)} />
+      </div>
+
+      <button onClick={submit} disabled={busy} style={{ width: '100%', padding: '15px', borderRadius: 12, background: '#C9A84C', color: '#1E2A38', fontWeight: 800, fontSize: 17, border: 'none', cursor: 'pointer' }}>
+        {busy ? 'שולח...' : 'שליחה לעיבוד'}
+      </button>
+      {msg && <p style={{ textAlign: 'center', marginTop: 14, fontSize: 15, fontWeight: 600, color: msg.ok ? '#2f855a' : '#e53e3e' }}>{msg.text}</p>}
+    </div>
+  )
+}
+
 export function Admin() {
   const [authed, setAuthed] = useState(() => !!sessionStorage.getItem(PW_KEY))
   const [pwInput, setPwInput] = useState('')
   const [loginErr, setLoginErr] = useState('')
+  const [mode, setMode] = useState<'intake' | 'edit'>('intake')
 
   const [tzaddikim, setTzaddikim] = useState<TzaddikRow[]>([])
   const [search, setSearch] = useState('')
@@ -240,8 +405,19 @@ export function Admin() {
     )
   }
 
+  if (mode === 'intake') {
+    return (
+      <div style={{ minHeight: '100vh', direction: 'rtl', fontFamily: 'system-ui,-apple-system,sans-serif', background: '#f7fafc' }}>
+        <ModeBar mode={mode} setMode={setMode} onLogout={() => { sessionStorage.removeItem(PW_KEY); setAuthed(false) }} />
+        <Intake />
+      </div>
+    )
+  }
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui,-apple-system,sans-serif', direction: 'rtl' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', fontFamily: 'system-ui,-apple-system,sans-serif', direction: 'rtl' }}>
+      <ModeBar mode={mode} setMode={setMode} onLogout={() => { sessionStorage.removeItem(PW_KEY); setAuthed(false) }} />
+      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
 
       {/* ── Sidebar ── */}
       <div style={{ width: 290, flexShrink: 0, borderLeft: '1px solid #e2e8f0', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
@@ -423,6 +599,7 @@ export function Admin() {
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }
