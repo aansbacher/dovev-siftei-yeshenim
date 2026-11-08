@@ -58,7 +58,7 @@ export default async function handler(req: any, res: any) {
     for (const r of all) if (r.importance_score >= 30) { const bn = firstName(r.biography); if (bn && r.popular_name && !share(bn, r.popular_name) && !share(r.popular_name, r.biography)) mismatch++ }
 
     // ── rolling-window report (next 7 Hebrew days) + daily email to owner ──
-    const emptyDays: string[] = [], flags: string[] = []
+    const emptyDays: string[] = [], sparseDays: string[] = [], flags: string[] = []
     try {
       const { HDate } = await import('@hebcal/core')
       const MONTH: Record<string, string> = { Nisan: 'ניסן', Iyyar: 'אייר', Sivan: 'סיון', Tamuz: 'תמוז', Av: 'אב', Elul: 'אלול', Tishrei: 'תשרי', Cheshvan: 'חשוון', Kislev: 'כסלו', Tevet: 'טבת', "Sh'vat": 'שבט', Shvat: 'שבט', Adar: 'אדר', 'Adar I': 'אדר א', 'Adar II': 'אדר ב' }
@@ -70,6 +70,7 @@ export default async function handler(req: any, res: any) {
         const alias = mHe === 'חשוון' ? ['חשוון', 'חשון'] : [mHe]
         const figs = all.filter(r => r.hebrew_day === d.getDate() && alias.includes(r.hebrew_month) && r.importance_score >= 30).sort((a, b) => b.importance_score - a.importance_score).slice(0, 4)
         if (!figs.length) { emptyDays.push(`${d.getDate()} ${mHe}`); continue }
+        if (figs.length < 2) sparseDays.push(`${d.getDate()} ${mHe} (${figs.length})`)
         for (const r of figs) {
           const iss: string[] = []
           if (L(r.story) < 300) iss.push('סיפור דק')
@@ -87,6 +88,7 @@ export default async function handler(req: any, res: any) {
           <p style="margin:6px 0"><b>תיקונים אוטומטיים בטוחים:</b> ${fixedLine}</p>
           <p style="margin:6px 0"><b>אי-התאמות טקסט לבדיקה:</b> ${mismatch}</p>
           ${emptyDays.length ? `<p style="margin:6px 0;color:#b45309"><b>⚠️ ימים ריקים (7 ימים קדימה):</b> ${emptyDays.join(' · ')}</p>` : ''}
+          ${sparseDays.length ? `<p style="margin:6px 0;color:#b45309"><b>ימים דלילים (ייתכן חוסר — להצליב מול ויקיפדיה):</b> ${sparseDays.join(' · ')}</p>` : ''}
           <p style="margin:14px 0 6px"><b>דורש תשומת לב אנושית — חלון 7 ימים (${flags.length}):</b></p>
           ${flags.length ? '<ul style="margin:0;padding-inline-start:18px;line-height:1.7">' + flags.map(f => `<li>${f}</li>`).join('') + '</ul>' : '<p style="color:#2f855a">הכול תקין בחלון 7 הימים ✓</p>'}
           <p style="color:#999;font-size:12px;margin-top:16px">סימון בלבד. התוכן העמוק נכתב בפיקוח, לא אוטומטית.</p>
