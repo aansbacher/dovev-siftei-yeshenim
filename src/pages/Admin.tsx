@@ -140,7 +140,9 @@ function Intake() {
         submitter_name: 'admin',
       })
       if (error) throw error
-      setMsg({ text: 'נשלח בהצלחה ✓ ייכנס לעיבוד', ok: true })
+      // auto-trigger the processor (fire-and-forget; the queue tab also has a manual button)
+      void runProcessor(sessionStorage.getItem(PW_KEY) ?? '')
+      setMsg({ text: 'נשלח בהצלחה ✓ נכנס לעיבוד אוטומטי — עקוב בטאב "ממתינים לעיבוד"', ok: true })
       setText(''); setNote(''); setImages([]); setPicked(null); setQ(''); setNewName(''); setNewMonth(''); setNewDay('')
     } catch (e) { setMsg({ text: `שגיאה: ${e instanceof Error ? e.message : 'unknown'}`, ok: false }) }
     setBusy(false)
@@ -246,10 +248,20 @@ interface SuggestionRow {
 }
 
 const STATUS_META: Record<string, { label: string; bg: string; fg: string }> = {
-  pending:    { label: 'ממתין',  bg: '#fefcbf', fg: '#975a16' },
-  processing: { label: 'בעיבוד', bg: '#bee3f8', fg: '#2a4365' },
-  done:       { label: 'טופל ✓', bg: '#c6f6d5', fg: '#22543d' },
-  rejected:   { label: 'נדחה',   bg: '#fed7d7', fg: '#822727' },
+  pending:      { label: 'ממתין',  bg: '#fefcbf', fg: '#975a16' },
+  processing:   { label: 'בעיבוד…', bg: '#bee3f8', fg: '#2a4365' },
+  needs_review: { label: 'טיוטה — לבדיקה', bg: '#fbd38d', fg: '#7b341e' },
+  done:         { label: 'טופל ✓', bg: '#c6f6d5', fg: '#22543d' },
+  rejected:     { label: 'נדחה',   bg: '#fed7d7', fg: '#822727' },
+}
+
+// Trigger the automatic processor (fire-and-forget on submit, or awaited from the queue button).
+async function runProcessor(pw: string): Promise<{ done: boolean; message?: string }> {
+  try {
+    const res = await fetch('/api/process-queue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) })
+    const data = await res.json().catch(() => ({}))
+    return { done: !data.processed, message: data.name || data.message || data.error }
+  } catch { return { done: true } }
 }
 
 /** Read-only view of the submission queue so the owner can confirm intake landed and track processing. */
@@ -258,6 +270,7 @@ function Queue() {
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState('')
   const [filter, setFilter] = useState<'open' | 'all'>('open')
+  const [working, setWorking] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     setLoading(true); setErr('')
@@ -279,8 +292,20 @@ function Queue() {
     await fetch('/api/admin-suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw, action: 'set_status', id, status }) })
   }
 
-  const shown = rows.filter(r => filter === 'all' || (r.status ?? 'pending') === 'pending' || (r.status ?? '') === 'processing')
+  const OPEN = ['pending', 'processing', 'needs_review']
+  const shown = rows.filter(r => filter === 'all' || OPEN.includes(r.status ?? 'pending'))
   const openCount = rows.filter(r => (r.status ?? 'pending') === 'pending').length
+
+  async function processAll() {
+    const pw = sessionStorage.getItem(PW_KEY) ?? ''
+    for (let i = 0; i < 25; i++) {
+      setWorking(`מעבד פריט ${i + 1}…`)
+      const r = await runProcessor(pw)
+      await refresh()
+      if (r.done) break
+    }
+    setWorking(null)
+  }
 
   const chip = (active: boolean): React.CSSProperties => ({ padding: '6px 12px', borderRadius: 7, border: '1px solid #cbd5e0', cursor: 'pointer', fontSize: 13, fontWeight: 600, background: active ? '#1E2A38' : '#fff', color: active ? '#fff' : '#4a5568' })
 
@@ -289,9 +314,10 @@ function Queue() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1E2A38', margin: 0 }}>ממתינים לעיבוד</h1>
         {openCount > 0 && <span style={{ background: '#C9A84C', color: '#1E2A38', fontWeight: 800, fontSize: 13, borderRadius: 999, padding: '2px 10px' }}>{openCount}</span>}
-        <button onClick={refresh} style={{ marginInlineStart: 'auto', ...chip(false) }}>רענון ⟳</button>
+        <button onClick={processAll} disabled={!!working} style={{ marginInlineStart: 'auto', ...chip(true) }}>{working || 'עבד עכשיו ⚡'}</button>
+        <button onClick={refresh} style={chip(false)}>רענון ⟳</button>
       </div>
-      <p style={{ fontSize: 14, color: '#718096', margin: '0 0 16px', lineHeight: 1.6 }}>כל מה שהוזן דרך "הזנת תוכן" נשמר כאן. כך תדע שההעלאה נקלטה ובאיזה שלב היא.</p>
+      <p style={{ fontSize: 14, color: '#718096', margin: '0 0 16px', lineHeight: 1.6 }}>כל מה שהוזן דרך "הזנת תוכן" נשמר כאן. "עבד עכשיו" מריץ את המעבד האוטומטי: קורא, מאמת, וכותב. מה שלא אומת נשמר כטיוטה לבדיקה ולא עולה לאוויר.</p>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <button onClick={() => setFilter('open')} style={chip(filter === 'open')}>פתוחים</button>
