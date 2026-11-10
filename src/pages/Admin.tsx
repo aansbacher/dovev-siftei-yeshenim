@@ -66,11 +66,14 @@ function rowToForm(t: TzaddikRow): FormData {
   }
 }
 
-function ModeBar({ mode, setMode, onLogout }: { mode: string; setMode: (m: 'intake' | 'edit') => void; onLogout: () => void }) {
+type Mode = 'intake' | 'queue' | 'edit'
+
+function ModeBar({ mode, setMode, onLogout }: { mode: string; setMode: (m: Mode) => void; onLogout: () => void }) {
   const btn = (active: boolean): React.CSSProperties => ({ padding: '7px 14px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, background: active ? '#1E2A38' : '#edf2f7', color: active ? '#F7F3EA' : '#4a5568' })
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid #e2e8f0', background: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
       <button onClick={() => setMode('intake')} style={btn(mode === 'intake')}>הזנת תוכן</button>
+      <button onClick={() => setMode('queue')} style={btn(mode === 'queue')}>ממתינים לעיבוד</button>
       <button onClick={() => setMode('edit')} style={btn(mode === 'edit')}>עריכה ידנית</button>
       <button onClick={onLogout} style={{ marginInlineStart: 'auto', padding: '7px 12px', borderRadius: 7, border: '1px solid #cbd5e0', background: '#fff', cursor: 'pointer', fontSize: 13, color: '#718096' }}>יציאה</button>
     </div>
@@ -230,11 +233,121 @@ function Intake() {
   )
 }
 
+interface SuggestionRow {
+  id: number
+  created_at: string
+  type: string
+  tzaddik_id: number | null
+  tzaddik_name: string | null
+  hebrew_date: string | null
+  content: string | null
+  sources: string | null
+  status: string | null
+}
+
+const STATUS_META: Record<string, { label: string; bg: string; fg: string }> = {
+  pending:    { label: 'ממתין',  bg: '#fefcbf', fg: '#975a16' },
+  processing: { label: 'בעיבוד', bg: '#bee3f8', fg: '#2a4365' },
+  done:       { label: 'טופל ✓', bg: '#c6f6d5', fg: '#22543d' },
+  rejected:   { label: 'נדחה',   bg: '#fed7d7', fg: '#822727' },
+}
+
+/** Read-only view of the submission queue so the owner can confirm intake landed and track processing. */
+function Queue() {
+  const [rows, setRows] = useState<SuggestionRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState('')
+  const [filter, setFilter] = useState<'open' | 'all'>('open')
+
+  const refresh = useCallback(async () => {
+    setLoading(true); setErr('')
+    try {
+      const pw = sessionStorage.getItem(PW_KEY) ?? ''
+      const res = await fetch('/api/admin-suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw, action: 'list' }) })
+      const data = await res.json()
+      if (res.ok) setRows(data.rows as SuggestionRow[])
+      else setErr(`שגיאה: ${data.error}`)
+    } catch (e) { setErr(`שגיאה: ${e instanceof Error ? e.message : 'unknown'}`) }
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { refresh() }, [refresh])
+
+  async function setStatus(id: number, status: string) {
+    const pw = sessionStorage.getItem(PW_KEY) ?? ''
+    setRows(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+    await fetch('/api/admin-suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw, action: 'set_status', id, status }) })
+  }
+
+  const shown = rows.filter(r => filter === 'all' || (r.status ?? 'pending') === 'pending' || (r.status ?? '') === 'processing')
+  const openCount = rows.filter(r => (r.status ?? 'pending') === 'pending').length
+
+  const chip = (active: boolean): React.CSSProperties => ({ padding: '6px 12px', borderRadius: 7, border: '1px solid #cbd5e0', cursor: 'pointer', fontSize: 13, fontWeight: 600, background: active ? '#1E2A38' : '#fff', color: active ? '#fff' : '#4a5568' })
+
+  return (
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: '20px 16px 60px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1E2A38', margin: 0 }}>ממתינים לעיבוד</h1>
+        {openCount > 0 && <span style={{ background: '#C9A84C', color: '#1E2A38', fontWeight: 800, fontSize: 13, borderRadius: 999, padding: '2px 10px' }}>{openCount}</span>}
+        <button onClick={refresh} style={{ marginInlineStart: 'auto', ...chip(false) }}>רענון ⟳</button>
+      </div>
+      <p style={{ fontSize: 14, color: '#718096', margin: '0 0 16px', lineHeight: 1.6 }}>כל מה שהוזן דרך "הזנת תוכן" נשמר כאן. כך תדע שההעלאה נקלטה ובאיזה שלב היא.</p>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button onClick={() => setFilter('open')} style={chip(filter === 'open')}>פתוחים</button>
+        <button onClick={() => setFilter('all')} style={chip(filter === 'all')}>הכול</button>
+      </div>
+
+      {loading && <div style={{ color: '#a0aec0', fontSize: 14 }}>טוען...</div>}
+      {err && <div style={{ color: '#e53e3e', fontSize: 14 }}>{err}</div>}
+      {!loading && !err && shown.length === 0 && <div style={{ color: '#a0aec0', fontSize: 15, textAlign: 'center', marginTop: 40 }}>אין פריטים</div>}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {shown.map(r => {
+          const st = STATUS_META[r.status ?? 'pending'] ?? STATUS_META.pending
+          const imgs = (r.content ?? '').match(/https?:\/\/\S+\.(?:jpg|jpeg|png|webp|gif)/gi) ?? []
+          const noteMatch = (r.content ?? '').match(/הערה:\s*([^\n]+)/)
+          const bodyText = (r.content ?? '').replace(/תמונות:[\s\S]*$/, '').replace(/הערה:\s*[^\n]+\n?/, '').trim()
+          const when = new Date(r.created_at).toLocaleString('he-IL', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })
+          return (
+            <div key={r.id} style={{ border: '1px solid #e2e8f0', borderRadius: 12, background: '#fff', padding: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                <span style={{ background: st.bg, color: st.fg, fontWeight: 700, fontSize: 12, borderRadius: 6, padding: '2px 8px' }}>{st.label}</span>
+                <span style={{ background: r.type === 'new_tzaddik' ? '#e9d8fd' : '#e2e8f0', color: '#4a5568', fontWeight: 700, fontSize: 12, borderRadius: 6, padding: '2px 8px' }}>{r.type === 'new_tzaddik' ? 'צדיק חדש' : 'עיבוי קיים'}</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#1E2A38' }}>{r.tzaddik_name ?? '—'}</span>
+                {r.tzaddik_id && <span style={{ fontSize: 12, color: '#a0aec0' }}>#{r.tzaddik_id}</span>}
+                {r.hebrew_date && <span style={{ fontSize: 12, color: '#718096' }}>· {r.hebrew_date}</span>}
+                <span style={{ marginInlineStart: 'auto', fontSize: 12, color: '#a0aec0' }}>{when}</span>
+              </div>
+              {noteMatch && <div style={{ fontSize: 13, color: '#975a16', background: '#fffbeb', borderRadius: 7, padding: '6px 10px', marginBottom: 8 }}>הערה: {noteMatch[1]}</div>}
+              {bodyText && <div style={{ fontSize: 13, color: '#4a5568', lineHeight: 1.6, whiteSpace: 'pre-wrap', marginBottom: 8, maxHeight: 120, overflow: 'auto' }}>{bodyText}</div>}
+              {imgs.length > 0 && (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                  {imgs.map((u, i) => (
+                    <a key={i} href={u} target="_blank" rel="noreferrer">
+                      <img src={u} alt="" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid #e2e8f0' }} />
+                    </a>
+                  ))}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(r.status ?? 'pending') !== 'done' && <button onClick={() => setStatus(r.id, 'done')} style={{ ...chip(false), color: '#22543d', borderColor: '#9ae6b4' }}>סמן כטופל ✓</button>}
+                {(r.status ?? 'pending') === 'done' && <button onClick={() => setStatus(r.id, 'pending')} style={chip(false)}>החזר לממתין</button>}
+                {(r.status ?? 'pending') !== 'rejected' && <button onClick={() => setStatus(r.id, 'rejected')} style={{ ...chip(false), color: '#822727', borderColor: '#feb2b2' }}>דחה</button>}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function Admin() {
   const [authed, setAuthed] = useState(() => !!sessionStorage.getItem(PW_KEY))
   const [pwInput, setPwInput] = useState('')
   const [loginErr, setLoginErr] = useState('')
-  const [mode, setMode] = useState<'intake' | 'edit'>('intake')
+  const [mode, setMode] = useState<Mode>('intake')
 
   const [tzaddikim, setTzaddikim] = useState<TzaddikRow[]>([])
   const [search, setSearch] = useState('')
@@ -405,11 +518,11 @@ export function Admin() {
     )
   }
 
-  if (mode === 'intake') {
+  if (mode === 'intake' || mode === 'queue') {
     return (
       <div style={{ minHeight: '100vh', direction: 'rtl', fontFamily: 'system-ui,-apple-system,sans-serif', background: '#f7fafc' }}>
         <ModeBar mode={mode} setMode={setMode} onLogout={() => { sessionStorage.removeItem(PW_KEY); setAuthed(false) }} />
-        <Intake />
+        {mode === 'intake' ? <Intake /> : <Queue />}
       </div>
     )
   }
