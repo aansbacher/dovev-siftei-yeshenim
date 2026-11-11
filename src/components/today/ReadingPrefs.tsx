@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Type } from 'lucide-react'
+import { useNikudEnabled, setNikudEnabled } from '../../lib/nikud'
 
 const FONTS = [
   { key: 'rubik', label: 'עגול', css: "'Rubik','Heebo',sans-serif" },
@@ -32,6 +33,7 @@ export function ReadingPrefs() {
   const setFontK = (k: string) => { setFont(k); apply(k, scale); try { localStorage.setItem('read-font', k) } catch {} }
   const setScaleN = (n: number) => { setScale(n); apply(font, n); try { localStorage.setItem('read-scale', String(n)) } catch {} }
   const sizeIdx = Math.max(0, SIZES.indexOf(scale))
+  const nikud = useNikudEnabled()
 
   return (
     <div className="relative">
@@ -76,6 +78,24 @@ export function ReadingPrefs() {
                   א
                 </button>
               ))}
+            </div>
+
+            <p className="text-[12px] font-bold text-muted mt-4 mb-2">ניקוד</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setNikudEnabled(false)}
+                className={`flex-1 rounded-xl py-2 text-[14px] font-semibold border transition
+                  ${!nikud ? 'border-gold bg-accent-soft text-ink' : 'border-rule bg-surface text-ink-soft hover:bg-surface-2'}`}
+              >
+                בלי ניקוד
+              </button>
+              <button
+                onClick={() => setNikudEnabled(true)}
+                className={`flex-1 rounded-xl py-2 text-[15px] font-semibold border transition
+                  ${nikud ? 'border-gold bg-accent-soft text-ink' : 'border-rule bg-surface text-ink-soft hover:bg-surface-2'}`}
+              >
+                מְנֻקָּד
+              </button>
             </div>
           </div>
         </>

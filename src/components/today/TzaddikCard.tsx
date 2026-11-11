@@ -5,6 +5,7 @@ import { Heart, Copy, BookOpen, Send, Loader2, ExternalLink } from 'lucide-react
 import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
 import { hebrewDateLabel } from '../../lib/hebrewDate'
+import { useNikud } from '../../lib/nikud'
 
 const LIKED_KEY = 'dshy_liked'
 
@@ -116,9 +117,9 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
 // ── Main full card ──────────────────────────────────────────────────────────
 
 const TABS = [
+  { value: 'bio',      label: 'חייו',   key: 'biography' as const, empty: 'אין רקע זמין' },
   { value: 'story',    label: 'סיפור',  key: 'story' as const,     empty: 'אין סיפור זמין' },
   { value: 'teaching', label: 'מתורתו', key: 'torah' as const,     empty: 'אין תורה זמינה' },
-  { value: 'bio',      label: 'מי היה', key: 'biography' as const, empty: 'אין רקע זמין' },
 ]
 
 function SectionHead({ children }: { children: React.ReactNode }) {
@@ -168,13 +169,16 @@ function StoryContent({ text, className = '' }: { text: string; className?: stri
 
 function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
   const links = furtherReadingLinks(tzaddik)
+  const quoteN = useNikud(tzaddik.quote)
+  const storyN = useNikud(tzaddik.story)
+  const torahN = useNikud(tzaddik.torah)
   return (
     <div className="space-y-7" dir="rtl">
       {/* Quote — warm pull-quote, follows reading font */}
       {tzaddik.quote && (
         <div className="relative rounded-2xl bg-warm-soft border border-[color:var(--warm-line)] px-5 pt-7 pb-4">
           <span className="absolute -top-3 right-4 font-display text-5xl leading-none text-warm opacity-60">״</span>
-          <p className="read-text font-medium text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>{tzaddik.quote}</p>
+          <p className="read-text font-medium text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>{quoteN}</p>
           <p className="text-muted text-xs mt-3 text-left">{tzaddik.popularName}</p>
         </div>
       )}
@@ -183,7 +187,7 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
       {tzaddik.story && (
         <div>
           <SectionHead>הַסִּפּוּר</SectionHead>
-          <StoryContent text={tzaddik.story} className="text-ink-soft" />
+          <StoryContent text={storyN} className="text-ink-soft" />
         </div>
       )}
 
@@ -191,7 +195,7 @@ function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
       {tzaddik.torah && (
         <div>
           <SectionHead>מִתּוֹרָתוֹ</SectionHead>
-          <p className="read-text text-ink-soft whitespace-pre-wrap">{tzaddik.torah}</p>
+          <p className="read-text text-ink-soft whitespace-pre-wrap">{torahN}</p>
         </div>
       )}
 
@@ -264,7 +268,13 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
   const [copied, setCopied] = useState(false)
   const [deepenOpen, setDeepenOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
-  const [activeTab, setActiveTab] = useState('story')
+  const [activeTab, setActiveTab] = useState('bio')
+  const nikudByKey = {
+    biography: useNikud(tzaddik.biography),
+    story: useNikud(tzaddik.story),
+    torah: useNikud(tzaddik.torah),
+  } as const
+  const quoteN = useNikud(tzaddik.quote)
 
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
@@ -361,7 +371,7 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
           <div className="dsy-pull mt-6 mb-0.5">
             <span className="qm">״</span>
             <p className="font-medium text-lg sm:text-[22px] leading-[1.75] text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>
-              {tzaddik.quote}
+              {quoteN}
             </p>
           </div>
         )}
@@ -383,7 +393,7 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
           </TabsPrimitive.List>
 
           {TABS.map(({ value, key, empty }) => {
-            const content = tzaddik[key]
+            const content = nikudByKey[key]
             return (
               <TabsPrimitive.Content
                 key={value}
