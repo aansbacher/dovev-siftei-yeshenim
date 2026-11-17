@@ -10,8 +10,10 @@ import { DayNavigator } from '../components/today/DayNavigator'
 import { HebrewCalendar } from '../components/today/HebrewCalendar'
 import { ReadingPrefs } from '../components/today/ReadingPrefs'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
+import { useI18n } from '../lib/i18n'
 
 export function Today() {
+  const { t } = useI18n()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const hebrew = getHebrewDate(selectedDate)
 
@@ -26,16 +28,18 @@ export function Today() {
   const emptyState = (
     <div className="max-w-2xl mx-auto w-full rounded-md border border-rule bg-surface p-10 text-center">
       <Moon className="mx-auto h-8 w-8 text-gold/40" />
-      <p className="mt-3 font-display text-xl font-bold text-ink">אין צדיקים מתועדים ליום זה</p>
-      <p className="mt-1 text-sm text-muted">נסו לבחור תאריך אחר בלוח</p>
+      <p className="mt-3 font-display text-xl font-bold text-ink">{t.emptyDay}</p>
+      <p className="mt-1 text-sm text-muted">{t.emptyDaySub}</p>
     </div>
   )
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:gap-6 pb-10">
+    <div className="grid grid-cols-1 gap-3 sm:gap-4 pb-10">
       {/* Masthead */}
       <HebrewDateBlock
         hebrewDateDisplay={hebrew.hebrewDateDisplay}
+        hebrewDay={hebrew.hebrewDay}
+        hebrewMonth={hebrew.hebrewMonth}
         parasha={hebrew.parasha}
         gregorianDate={hebrew.gregorianDate}
         totalTzaddikim={tzaddikim.length}

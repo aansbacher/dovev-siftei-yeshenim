@@ -18,13 +18,13 @@
   --ink: #2A3350;           /* deep slate-blue text */
   --ink-soft: #5B6480;
   --muted: #98A0B8;
-  --gold: #5B76E5;          /* friendly blue accent (name kept for compatibility) */
-  --gold-deep: #4359C6;
-  --line: rgba(91, 118, 229, .20);
+  --gold: #B4772A;          /* warm gold — primary brand + action accent */
+  --gold-deep: #935E1C;
+  --line: rgba(180, 119, 42, .22);
   --rule: #E6E9F6;          /* hairline divider */
   --shadow: rgba(42, 51, 80, .10);
   --onwhite: #fff;
-  --accent-soft: #EEF1FD;   /* selected/hover tint */
+  --accent-soft: #FBF2E3;   /* warm selected/hover tint */
 
   /* ── warm secondary accent (holiness / "בעל ההילולה") ── */
   --warm: #D9A24E;          /* soft amber-gold */
@@ -35,7 +35,7 @@
 }
 
 html {
-  direction: rtl;
+  /* direction is driven by the [dir] attribute (set by I18nProvider: rtl for Hebrew, ltr for English) */
   overflow-x: hidden;
 }
 
@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Rubik', 'Heebo', sans-serif; }
 
 /* pull-quote — warm gold */
 .dsy-pull { position: relative; padding: 4px 34px 0; }
-.dsy-pull .qm { position: absolute; top: -16px; right: -2px; font-family: Georgia, serif; font-weight: 700; font-size: 58px; line-height: 1; color: var(--warm); opacity: .5; }
+.dsy-pull .qm { position: absolute; top: -10px; right: -2px; font-family: Georgia, serif; font-weight: 700; font-size: 40px; line-height: 1; color: var(--warm); opacity: .5; }
 
 /* tab underline — blue */
 .dsy-tab { position: relative; }
@@ -104,7 +104,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Rubik', 'Heebo', sans-serif; }
 .dsy-cd i { font-style: normal; font-size: 8.5px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .dsy-cd:hover:not(.on):not(.blank) { background: var(--accent-soft); }
 .dsy-cd.blank { visibility: hidden; cursor: default; background: none; }
-.dsy-cd.on { background: var(--gold); box-shadow: 0 4px 12px -3px rgba(91,118,229,.5); }
+.dsy-cd.on { background: var(--gold); box-shadow: 0 4px 12px -3px rgba(180,119,42,.45); }
 .dsy-cd.on b, .dsy-cd.on i { color: var(--onwhite); }
 .dsy-cd.dot::after { content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
 .dsy-cd.on.dot::after { background: var(--onwhite); }

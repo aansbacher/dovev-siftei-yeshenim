@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import type { Tzaddik } from '../../types'
 import { TzaddikCard } from './TzaddikCard'
+import { useI18n } from '../../lib/i18n'
 
 interface TzaddikDeckProps {
   tzaddikim: Tzaddik[]
@@ -13,6 +14,7 @@ interface TzaddikDeckProps {
  * Default = the most well-known (index 0).
  */
 export function TzaddikDeck({ tzaddikim }: TzaddikDeckProps) {
+  const { t: tr } = useI18n()
   const [i, setI] = useState(0)
   const startX = useRef<number | null>(null)
   const ids = tzaddikim.map(t => t.id).join(',')
@@ -32,15 +34,16 @@ export function TzaddikDeck({ tzaddikim }: TzaddikDeckProps) {
     startX.current = null
   }
 
-  const bigArrow = 'shrink-0 w-12 h-12 rounded-full bg-gold text-white flex items-center justify-center shadow-[0_8px_20px_-6px_rgba(91,118,229,.6)] hover:bg-gold-deep transition active:scale-95 disabled:opacity-25 disabled:shadow-none'
+  const bigArrow = 'shrink-0 w-[34px] h-[34px] rounded-full bg-gold text-white flex items-center justify-center shadow-[0_6px_16px_-5px_rgba(180,119,42,.5)] hover:bg-gold-deep transition active:scale-95 disabled:opacity-25 disabled:shadow-none'
 
   return (
     <div className="max-w-2xl mx-auto w-full">
       {/* ── Big, clear slider control ── */}
       {!single && (
         <div className="flex items-center justify-between gap-3 mb-4 select-none">
-          <button onClick={() => go(i - 1)} disabled={i === 0} aria-label="הצדיק הקודם" className={bigArrow}>
-            <ChevronRight className="w-7 h-7" />
+          <button onClick={() => go(i - 1)} disabled={i === 0} aria-label={tr.prev} className={bigArrow}>
+            <ChevronRight className="w-5 h-5 rtl:block ltr:hidden" />
+            <ChevronLeft className="w-5 h-5 rtl:hidden ltr:block" />
           </button>
 
           <div className="flex flex-col items-center gap-2">
@@ -55,11 +58,12 @@ export function TzaddikDeck({ tzaddikim }: TzaddikDeckProps) {
                 />
               ))}
             </div>
-            <span className="text-[13px] font-bold text-ink-soft">צדיק {i + 1} מתוך {n}</span>
+            <span className="text-[13px] font-bold text-ink-soft">{tr.counter(i + 1, n)}</span>
           </div>
 
-          <button onClick={() => go(i + 1)} disabled={i === n - 1} aria-label="הצדיק הבא" className={bigArrow}>
-            <ChevronLeft className="w-7 h-7" />
+          <button onClick={() => go(i + 1)} disabled={i === n - 1} aria-label={tr.next} className={bigArrow}>
+            <ChevronLeft className="w-5 h-5 rtl:block ltr:hidden" />
+            <ChevronRight className="w-5 h-5 rtl:hidden ltr:block" />
           </button>
         </div>
       )}
@@ -73,7 +77,7 @@ export function TzaddikDeck({ tzaddikim }: TzaddikDeckProps) {
 
       {!single && (
         <p className="text-center text-[12px] text-muted mt-3.5">
-          החליקו הצידה או הקישו על החצים לדפדוף בין צדיקי היום
+          {tr.swipeHint}
         </p>
       )}
     </div>

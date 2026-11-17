@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Type } from 'lucide-react'
 import { useNikudEnabled, setNikudEnabled } from '../../lib/nikud'
+import { useI18n } from '../../lib/i18n'
 
 const FONTS = [
-  { key: 'rubik', label: 'עגול', css: "'Rubik','Heebo',sans-serif" },
-  { key: 'frank', label: 'קלאסי', css: "'Frank Ruhl Libre',Georgia,serif" },
-  { key: 'heebo', label: 'רגיל', css: "'Heebo',sans-serif" },
+  { key: 'rubik', lk: 'fontRound' as const, css: "'Rubik','Heebo',sans-serif" },
+  { key: 'frank', lk: 'fontClassic' as const, css: "'Frank Ruhl Libre',Georgia,serif" },
+  { key: 'heebo', lk: 'fontPlain' as const, css: "'Heebo',sans-serif" },
 ]
 const SIZES = [0.9, 1, 1.15, 1.3]
 
@@ -34,23 +35,24 @@ export function ReadingPrefs() {
   const setScaleN = (n: number) => { setScale(n); apply(font, n); try { localStorage.setItem('read-scale', String(n)) } catch {} }
   const sizeIdx = Math.max(0, SIZES.indexOf(scale))
   const nikud = useNikudEnabled()
+  const { t } = useI18n()
 
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        aria-label="סגנון קריאה"
+        aria-label={t.readingStyle}
         className="flex items-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-1.5 text-[12.5px] font-semibold text-ink-soft hover:border-gold/40 transition"
       >
         <Type className="w-4 h-4 text-gold" />
-        סגנון קריאה
+        {t.readingStyle}
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute z-20 top-full mt-2 left-0 w-64 rounded-2xl bg-surface border border-rule shadow-[0_16px_36px_-14px_var(--shadow)] p-4">
-            <p className="text-[12px] font-bold text-muted mb-2">גופן</p>
+            <p className="text-[12px] font-bold text-muted mb-2">{t.font}</p>
             <div className="grid grid-cols-3 gap-2">
               {FONTS.map(f => (
                 <button
@@ -60,12 +62,12 @@ export function ReadingPrefs() {
                   className={`rounded-xl py-2.5 text-[14px] font-semibold border transition
                     ${font === f.key ? 'border-gold bg-accent-soft text-ink' : 'border-rule bg-surface text-ink-soft hover:bg-surface-2'}`}
                 >
-                  {f.label}
+                  {t[f.lk]}
                 </button>
               ))}
             </div>
 
-            <p className="text-[12px] font-bold text-muted mt-4 mb-2">גודל טקסט</p>
+            <p className="text-[12px] font-bold text-muted mt-4 mb-2">{t.textSize}</p>
             <div className="flex items-center gap-2">
               {SIZES.map((s, i) => (
                 <button
@@ -80,21 +82,21 @@ export function ReadingPrefs() {
               ))}
             </div>
 
-            <p className="text-[12px] font-bold text-muted mt-4 mb-2">ניקוד</p>
+            <p className="text-[12px] font-bold text-muted mt-4 mb-2">{t.nikud}</p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setNikudEnabled(false)}
                 className={`flex-1 rounded-xl py-2 text-[14px] font-semibold border transition
                   ${!nikud ? 'border-gold bg-accent-soft text-ink' : 'border-rule bg-surface text-ink-soft hover:bg-surface-2'}`}
               >
-                בלי ניקוד
+                {t.noNikud}
               </button>
               <button
                 onClick={() => setNikudEnabled(true)}
                 className={`flex-1 rounded-xl py-2 text-[15px] font-semibold border transition
                   ${nikud ? 'border-gold bg-accent-soft text-ink' : 'border-rule bg-surface text-ink-soft hover:bg-surface-2'}`}
               >
-                מְנֻקָּד
+                {t.withNikud}
               </button>
             </div>
           </div>

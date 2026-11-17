@@ -1,18 +1,20 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, Search } from 'lucide-react'
+import { useI18n } from '../../lib/i18n'
 
 /** Mobile bottom tab bar with an elevated center button (מזמור-יומי style). */
 export function BottomNav() {
   const { pathname } = useLocation()
+  const { t, dir } = useI18n()
   const side = [
-    { to: '/', label: 'בית', icon: Home },
-    { to: '/search', label: 'חיפוש', icon: Search },
+    { to: '/', label: t.tab_home, icon: Home },
+    { to: '/search', label: t.tab_search, icon: Search },
   ]
   const isToday = pathname === '/today'
 
   return (
     <nav
-      dir="rtl"
+      dir={dir}
       className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur-md border-t border-rule"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
@@ -25,11 +27,11 @@ export function BottomNav() {
           <Link
             to="/today"
             aria-label="גיליון היום"
-            className={`-mt-7 w-16 h-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-[0_8px_20px_-4px_rgba(91,118,229,.55)] transition
+            className={`-mt-7 w-16 h-16 rounded-full flex flex-col items-center justify-center gap-0.5 shadow-[0_8px_20px_-4px_rgba(180,119,42,.5)] transition
               ${isToday ? 'bg-gold-deep' : 'bg-gold'} text-white`}
           >
             <BookOpen className="w-6 h-6" />
-            <span className="text-[10px] font-semibold">היום</span>
+            <span className="text-[10px] font-semibold">{t.tab_today}</span>
           </Link>
         </div>
 

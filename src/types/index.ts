@@ -13,6 +13,15 @@ export interface Tzaddik {
   biography?: string
   story?: string
   torah?: string
+  // English translations (optional; filled for the bilingual pilot)
+  popularNameEn?: string
+  fullNameEn?: string
+  yearsEn?: string
+  quoteEn?: string
+  roleEn?: string
+  biographyEn?: string
+  storyEn?: string
+  torahEn?: string
   // Date
   hebrewDay?: number
   hebrewMonth?: string

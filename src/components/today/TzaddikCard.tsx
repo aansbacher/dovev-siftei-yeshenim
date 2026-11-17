@@ -6,6 +6,7 @@ import type { Tzaddik } from '../../types'
 import { BottomSheet } from '../ui/BottomSheet'
 import { hebrewDateLabel } from '../../lib/hebrewDate'
 import { useNikud } from '../../lib/nikud'
+import { useI18n } from '../../lib/i18n'
 
 const LIKED_KEY = 'dshy_liked'
 
@@ -117,10 +118,10 @@ function AskBox({ tzaddikName, tabType }: { tzaddikName: string; tabType: string
 // ── Main full card ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { value: 'bio',      label: 'חייו',   key: 'biography' as const, empty: 'אין רקע זמין' },
-  { value: 'story',    label: 'סיפור',  key: 'story' as const,     empty: 'אין סיפור זמין' },
-  { value: 'teaching', label: 'מתורתו', key: 'torah' as const,     empty: 'אין תורה זמינה' },
-]
+  { value: 'bio',      key: 'biography' as const, lk: 'tab_life' as const,     ek: 'emptyLife' as const },
+  { value: 'story',    key: 'story' as const,     lk: 'tab_story' as const,    ek: 'emptyStory' as const },
+  { value: 'teaching', key: 'torah' as const,     lk: 'tab_teaching' as const, ek: 'emptyTeaching' as const },
+] as const
 
 function SectionHead({ children }: { children: React.ReactNode }) {
   return (
@@ -168,40 +169,46 @@ function StoryContent({ text, className = '' }: { text: string; className?: stri
 }
 
 function DeepenSheet({ tzaddik }: { tzaddik: Tzaddik }) {
+  const { lang, t, dir } = useI18n()
+  const en = lang === 'en'
   const links = furtherReadingLinks(tzaddik)
   const quoteN = useNikud(tzaddik.quote)
   const storyN = useNikud(tzaddik.story)
   const torahN = useNikud(tzaddik.torah)
+  const quoteD = en && tzaddik.quoteEn ? tzaddik.quoteEn : quoteN
+  const storyD = en && tzaddik.storyEn ? tzaddik.storyEn : storyN
+  const torahD = en && tzaddik.torahEn ? tzaddik.torahEn : torahN
+  const nameD = en && tzaddik.popularNameEn ? tzaddik.popularNameEn : tzaddik.popularName
   return (
-    <div className="space-y-7" dir="rtl">
+    <div className="space-y-7" dir={dir}>
       {/* Quote — warm pull-quote, follows reading font */}
-      {tzaddik.quote && (
+      {(tzaddik.quote || tzaddik.quoteEn) && (
         <div className="relative rounded-2xl bg-warm-soft border border-[color:var(--warm-line)] px-5 pt-7 pb-4">
-          <span className="absolute -top-3 right-4 font-display text-5xl leading-none text-warm opacity-60">״</span>
-          <p className="read-text font-medium text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>{quoteN}</p>
-          <p className="text-muted text-xs mt-3 text-left">{tzaddik.popularName}</p>
+          <span className="absolute -top-3 end-4 font-display text-5xl leading-none text-warm opacity-60">{en ? '“' : '״'}</span>
+          <p className="read-text font-medium text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>{quoteD}</p>
+          <p className="text-muted text-xs mt-3 text-start">{nameD}</p>
         </div>
       )}
 
       {/* Full story */}
-      {tzaddik.story && (
+      {(tzaddik.story || tzaddik.storyEn) && (
         <div>
-          <SectionHead>הַסִּפּוּר</SectionHead>
-          <StoryContent text={storyN} className="text-ink-soft" />
+          <SectionHead>{t.deepenStory}</SectionHead>
+          <StoryContent text={storyD} className="text-ink-soft" />
         </div>
       )}
 
       {/* Torah */}
-      {tzaddik.torah && (
+      {(tzaddik.torah || tzaddik.torahEn) && (
         <div>
-          <SectionHead>מִתּוֹרָתוֹ</SectionHead>
-          <p className="read-text text-ink-soft whitespace-pre-wrap">{torahN}</p>
+          <SectionHead>{t.deepenTeaching}</SectionHead>
+          <p className="read-text text-ink-soft whitespace-pre-wrap">{torahD}</p>
         </div>
       )}
 
       {/* Further reading — real links */}
       <div>
-        <SectionHead>לִקְרִיאָה נוֹסֶפֶת</SectionHead>
+        <SectionHead>{t.furtherReading}</SectionHead>
         <div className="flex flex-wrap gap-2">
           {links.map(l => (
             <a
@@ -269,12 +276,20 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
   const [deepenOpen, setDeepenOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [activeTab, setActiveTab] = useState('bio')
-  const nikudByKey = {
-    biography: useNikud(tzaddik.biography),
-    story: useNikud(tzaddik.story),
-    torah: useNikud(tzaddik.torah),
+  const { lang, t, dir } = useI18n()
+  const bioN = useNikud(tzaddik.biography)
+  const storyN = useNikud(tzaddik.story)
+  const torahN = useNikud(tzaddik.torah)
+  const quoteHe = useNikud(tzaddik.quote)
+  const en = lang === 'en'
+  const contentByKey = {
+    biography: en && tzaddik.biographyEn ? tzaddik.biographyEn : bioN,
+    story:     en && tzaddik.storyEn ? tzaddik.storyEn : storyN,
+    torah:     en && tzaddik.torahEn ? tzaddik.torahEn : torahN,
   } as const
-  const quoteN = useNikud(tzaddik.quote)
+  const quoteDisp = en && tzaddik.quoteEn ? tzaddik.quoteEn : quoteHe
+  const hasQuote = !!(tzaddik.quote || tzaddik.quoteEn)
+  const displayName = en && tzaddik.popularNameEn ? tzaddik.popularNameEn : tzaddik.popularName
 
   const handleCopy = async () => {
     await copyTzaddik(tzaddik)
@@ -332,11 +347,13 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
     )
   }
 
-  const subline = [tzaddik.stream, tzaddik.role, tzaddik.years].filter(Boolean).join(' · ')
+  const subline = en
+    ? [en && tzaddik.roleEn ? tzaddik.roleEn : tzaddik.role, en && tzaddik.yearsEn ? tzaddik.yearsEn : tzaddik.years].filter(Boolean).join(' · ')
+    : [tzaddik.stream, tzaddik.role, tzaddik.years].filter(Boolean).join(' · ')
 
   return (
     <>
-      <article dir="rtl" className="dsy-card relative overflow-hidden rounded-[24px] bg-surface border border-rule shadow-[0_1px_2px_rgba(42,51,80,.04),0_20px_44px_-22px_rgba(42,51,80,.24)] p-5 sm:p-7">
+      <article dir={dir} className="dsy-card relative overflow-hidden rounded-[24px] bg-surface border border-rule shadow-[0_1px_2px_rgba(42,51,80,.04),0_20px_44px_-22px_rgba(42,51,80,.24)] p-5 sm:p-7">
 
         {/* ── Head: soft rounded portrait + name ── */}
         <div className="relative z-[1] flex gap-4 sm:gap-5 items-center">
@@ -358,28 +375,28 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
             )}
           </div>
           <div className="min-w-0">
-            <div className="text-[11px] font-bold tracking-[2px] text-warm-deep mb-1.5">בעל ההילולה</div>
+            <div className="text-[11px] font-bold tracking-[2px] text-warm-deep mb-1.5">{t.eyebrow}</div>
             <h2 className="font-display font-bold text-2xl sm:text-[31px] leading-tight text-ink text-balance">
-              {tzaddik.popularName}
+              {displayName}
             </h2>
-            {subline && <div className="mt-1.5 text-[13px] text-muted">{subline}</div>}
+            {subline && <div className="mt-1.5 text-[13px] text-ink-soft leading-snug">{subline}</div>}
           </div>
         </div>
 
         {/* ── Pull-quote ── */}
-        {tzaddik.quote && (
+        {hasQuote && (
           <div className="dsy-pull mt-6 mb-0.5">
-            <span className="qm">״</span>
-            <p className="font-medium text-lg sm:text-[22px] leading-[1.75] text-ink text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>
-              {quoteN}
+            <span className="qm">{en ? '“' : '״'}</span>
+            <p className="font-medium text-[15px] sm:text-[18px] leading-[1.7] text-ink-soft text-pretty" style={{ fontFamily: 'var(--read-font, Rubik, Heebo, sans-serif)' }}>
+              {quoteDisp}
             </p>
           </div>
         )}
 
         {/* ── Tabs ── */}
-        <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab} dir="rtl" className="mt-7">
+        <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab} dir={dir} className="mt-7">
           <TabsPrimitive.List className="flex border-b border-rule">
-            {TABS.map(({ value, label }) => (
+            {TABS.map(({ value, lk }) => (
               <TabsPrimitive.Trigger
                 key={value}
                 value={value}
@@ -387,13 +404,14 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
                   data-[state=active]:border-b-2 data-[state=active]:border-gold
                   data-[state=active]:text-ink"
               >
-                {label}
+                {t[lk]}
               </TabsPrimitive.Trigger>
             ))}
           </TabsPrimitive.List>
 
-          {TABS.map(({ value, key, empty }) => {
-            const content = nikudByKey[key]
+          {TABS.map(({ value, key, ek }) => {
+            const content = contentByKey[key]
+            const empty = t[ek]
             return (
               <TabsPrimitive.Content
                 key={value}
@@ -418,37 +436,37 @@ export function TzaddikCard({ tzaddik, variant = 'main', showDate = false }: Tza
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25D366] text-white text-[15px] font-bold shadow-[0_8px_20px_-6px_rgba(37,211,102,.55)] hover:bg-[#20bd5a] transition active:scale-[.98]"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5 flex-none" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a8 8 0 01-2.4-1.5 9 9 0 01-1.6-2c-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5s0-.4 0-.5l-1-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.6 2.6 1 2.9.7 3.4.7.5 0 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.1 4.1 4.2-1.1A10 10 0 1012 2z"/></svg>
-            שיתוף בוואטסאפ
+            {t.shareWhatsapp}
           </button>
 
           {/* Secondary row */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setDeepenOpen(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold text-white text-[14px] font-semibold hover:bg-gold-deep transition active:scale-[.98]"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-rule bg-surface-2 text-ink text-[14px] font-semibold hover:border-gold/50 transition active:scale-[.98]"
             >
-              <BookOpen className="h-4 w-4" />
-              העמק בצדיק
+              <BookOpen className="h-4 w-4 text-gold-deep" />
+              {t.deepen}
             </button>
             <button
               onClick={() => setLiked(toggleLiked(tzaddik.id))}
-              aria-label={liked ? 'נשמר' : 'שמירה'}
+              aria-label={liked ? t.saved : t.save}
               className={`shrink-0 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition border active:scale-[.98] ${
                 liked ? 'bg-accent-soft text-gold-deep border-[color:var(--line)]' : 'border-rule bg-surface-2 text-ink hover:border-gold/50'
               }`}
             >
               <Heart className={`h-4 w-4 ${liked ? 'fill-current text-gold' : 'text-ink-soft'}`} />
-              {liked ? 'נשמר' : 'שמירה'}
+              {liked ? t.saved : t.save}
             </button>
             <button
               onClick={handleCopy}
-              aria-label={copied ? 'הועתק' : 'העתקת טקסט'}
+              aria-label={t.copy}
               className="shrink-0 flex items-center justify-center w-11 h-11 rounded-xl border border-rule bg-surface-2 text-ink-soft hover:border-gold/50 transition active:scale-95"
             >
               <Copy className="h-4 w-4" />
             </button>
           </div>
-          {copied && <p className="text-center text-[12px] text-gold-deep font-semibold">הטקסט הועתק ✓</p>}
+          {copied && <p className="text-center text-[12px] text-gold-deep font-semibold">{t.copied}</p>}
         </div>
       </article>
 

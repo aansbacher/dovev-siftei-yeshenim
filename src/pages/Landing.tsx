@@ -31,7 +31,7 @@ export function Landing() {
 
           <Link
             to="/today"
-            className="mt-5 w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-gold text-white font-bold text-[15px] py-3.5 shadow-[0_10px_24px_-8px_rgba(91,118,229,.65)] hover:bg-gold-deep transition active:scale-[.99]"
+            className="mt-5 w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-gold text-white font-bold text-[15px] py-3.5 shadow-[0_10px_24px_-8px_rgba(180,119,42,.5)] hover:bg-gold-deep transition active:scale-[.99]"
           >
             <BookOpen className="w-[18px] h-[18px]" />
             לגיליון של היום
