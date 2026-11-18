@@ -1,5 +1,5 @@
 import type { SpecialDay } from '../../lib/hebrewDate'
-import { useI18n, hebDateEn } from '../../lib/i18n'
+import { useI18n, hebDateEn, parshaEn } from '../../lib/i18n'
 
 interface HebrewDateBlockProps {
   hebrewDateDisplay: string
@@ -59,7 +59,7 @@ export function HebrewDateBlock({
         {parasha && (
           <>
             <i className="w-1 h-1 rounded-full bg-gold/70" />
-            <span>{t.parsha(parasha.replace(/^פ[֑-ׇ]*ר[֑-ׇ]*ש[֑-ׇ]*ת[֑-ׇ]*\s+/, '').replace(/[֑-ׇ]/g, ''))}</span>
+            <span>{t.parsha((() => { const clean = parasha.replace(/^פ[֑-ׇ]*ר[֑-ׇ]*ש[֑-ׇ]*ת[֑-ׇ]*\s+/, '').replace(/[֑-ׇ]/g, ''); return lang === 'en' ? parshaEn(clean) : clean })())}</span>
           </>
         )}
         {specialDays.map((sd, i) => (

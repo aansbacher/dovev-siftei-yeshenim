@@ -1,6 +1,7 @@
 import { HDate, gematriya } from '@hebcal/core'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { getHebrewDate } from '../../lib/hebrewDate'
+import { useI18n, hebMonthEn } from '../../lib/i18n'
 
 interface HebrewCalendarProps {
   date: Date
@@ -18,9 +19,11 @@ function moveHebrewMonth(date: Date, delta: number): Date {
   return new HDate(day, month, year).greg()
 }
 
-const DOW = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
-
 export function HebrewCalendar({ date, onChange }: HebrewCalendarProps) {
+  const { t, lang, dir } = useI18n()
+  const en = lang === 'en'
+  const PrevIcon = en ? ChevronLeft : ChevronRight
+  const NextIcon = en ? ChevronRight : ChevronLeft
   const hd = new HDate(date)
   const month = hd.getMonth()
   const year = hd.getFullYear()
@@ -30,11 +33,13 @@ export function HebrewCalendar({ date, onChange }: HebrewCalendarProps) {
   const lastGreg = new HDate(days, month, year).greg()
   const lead = firstGreg.getDay() // 0=Sun .. 6=Sat
 
-  const hebMonthName = getHebrewDate(firstGreg).hebrewMonth
-  const gregShort = (d: Date) => d.toLocaleDateString('he-IL', { month: 'short' })
+  const hebMonthNameHe = getHebrewDate(firstGreg).hebrewMonth
+  const hebMonthName = en ? hebMonthEn(hebMonthNameHe) : hebMonthNameHe
+  const gregShort = (d: Date) => d.toLocaleDateString(en ? 'en-US' : 'he-IL', { month: 'short' })
   const gregRange = gregShort(firstGreg) === gregShort(lastGreg)
     ? gregShort(firstGreg)
     : `${gregShort(firstGreg)}–${gregShort(lastGreg)}`
+  const yearLabel = en ? String(year) : gematriya(year % 1000)
 
   const cells: React.ReactNode[] = []
   for (let i = 0; i < lead; i++) cells.push(<span key={`b${i}`} className="dsy-cd blank" />)
@@ -47,29 +52,29 @@ export function HebrewCalendar({ date, onChange }: HebrewCalendarProps) {
         type="button"
         onClick={() => onChange(greg)}
         className={`dsy-cd${on ? ' on' : ''}`}
-        aria-label={`${gematriya(d)} ${hebMonthName}`}
+        aria-label={`${d} ${hebMonthName}`}
       >
-        <b>{gematriya(d)}</b>
+        <b>{en ? d : gematriya(d)}</b>
         <i>{greg.getDate()}</i>
       </button>
     )
   }
 
   return (
-    <div className="bg-surface border border-rule rounded-md p-3 mt-3.5">
+    <div className="bg-surface border border-rule rounded-md p-3 mt-3.5" dir={dir}>
       <div className="flex items-center justify-between mb-2.5">
-        <button type="button" onClick={() => onChange(moveHebrewMonth(date, -1))} className="p-1 text-gold" aria-label="חודש קודם">
-          <ChevronRight className="w-4 h-4" />
+        <button type="button" onClick={() => onChange(moveHebrewMonth(date, -1))} className="p-1 text-gold" aria-label={t.cal_prevMonth}>
+          <PrevIcon className="w-4 h-4" />
         </button>
         <span className="font-display font-bold text-sm text-ink text-center">
-          {hebMonthName} {gematriya(year % 1000)} · {gregRange} {firstGreg.getFullYear()}
+          {hebMonthName} {yearLabel} · {gregRange} {firstGreg.getFullYear()}
         </span>
-        <button type="button" onClick={() => onChange(moveHebrewMonth(date, 1))} className="p-1 text-gold" aria-label="חודש הבא">
-          <ChevronLeft className="w-4 h-4" />
+        <button type="button" onClick={() => onChange(moveHebrewMonth(date, 1))} className="p-1 text-gold" aria-label={t.cal_nextMonth}>
+          <NextIcon className="w-4 h-4" />
         </button>
       </div>
       <div className="dsy-calgrid mb-1">
-        {DOW.map((d) => <span key={d} className="dsy-dw">{d}</span>)}
+        {t.cal_dow.map((d, i) => <span key={i} className="dsy-dw">{d}</span>)}
       </div>
       <div className="dsy-calgrid">{cells}</div>
     </div>

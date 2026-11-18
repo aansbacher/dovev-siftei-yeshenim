@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, ArrowLeft } from 'lucide-react'
+import { BookOpen, ArrowLeft, ArrowRight } from 'lucide-react'
 import { getHebrewDate } from '../lib/hebrewDate'
 import { SubscribeForm } from '../components/subscribe/SubscribeForm'
+import { useI18n, hebDateEn } from '../lib/i18n'
 
 /** Warm, representative home: brand hero, a short teaser that leads to the About page. */
 export function Landing() {
   const hebrew = getHebrewDate(new Date())
+  const { t, lang, dir } = useI18n()
+  const Fwd = lang === 'en' ? ArrowRight : ArrowLeft
+  const todayDate = lang === 'en' ? hebDateEn(hebrew.hebrewDay, hebrew.hebrewMonth) : hebrew.hebrewDateDisplay
 
   return (
-    <div className="grid gap-5 pb-6">
+    <div className="grid gap-5 pb-6" dir={dir}>
       {/* ── Brand hero ── */}
       <section className="relative overflow-hidden rounded-[26px] border border-rule shadow-[0_14px_40px_-16px_var(--shadow)] bg-surface">
         <div
@@ -18,15 +22,15 @@ export function Landing() {
         />
         <div className="relative px-6 pt-8 pb-7 text-center flex flex-col items-center">
           <HeroArt />
-          <p className="mt-1 text-[12.5px] font-semibold tracking-[0.12em] text-gold">דּוֹבֵב שִׂפְתֵי יְשֵׁנִים</p>
-          <h1 className="font-display text-[32px] leading-tight text-ink mt-1.5">קדושים בכל יום</h1>
+          <p className="mt-1 text-[12.5px] font-semibold tracking-[0.12em] text-gold">{t.subBrand}</p>
+          <h1 className="font-display text-[32px] leading-tight text-ink mt-1.5">{t.brand}</h1>
           <p className="mt-2.5 text-[14px] text-ink-soft max-w-[20rem] leading-relaxed">
-            מסע יומי אל אור הצדיקים. בכל יום, סיפור ופנינה מתורתו של בעל ההילולא של היום.
+            {t.landingSub}
           </p>
 
           <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-surface-2 px-4 py-1.5 text-[13px] font-semibold text-ink-soft">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            היום, {hebrew.hebrewDateDisplay}
+            {t.todayIs} {todayDate}
           </div>
 
           <Link
@@ -34,7 +38,7 @@ export function Landing() {
             className="mt-5 w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-gold text-white font-bold text-[15px] py-3.5 shadow-[0_10px_24px_-8px_rgba(180,119,42,.5)] hover:bg-gold-deep transition active:scale-[.99]"
           >
             <BookOpen className="w-[18px] h-[18px]" />
-            לגיליון של היום
+            {t.ctaToday}
           </Link>
         </div>
       </section>
@@ -50,14 +54,13 @@ export function Landing() {
           style={{ background: 'radial-gradient(120% 80% at 50% -20%, #FCEFD6 0%, transparent 62%)' }}
         />
         <div className="relative">
-          <h2 className="font-display text-[19px] text-ink leading-tight">למה מזכירים את הצדיקים?</h2>
+          <h2 className="font-display text-[19px] text-ink leading-tight">{t.whyTitle}</h2>
           <p className="text-[14.5px] leading-[1.9] text-ink-soft mt-2">
-            כשלומדים את תורתם של הצדיקים ואומרים אותה, שפתותיהם רוחשות בקבר. אנו מדובבים את שפתיהם,
-            וזו מעלה גדולה להם ולנו.
+            {t.whyBody}
           </p>
           <span className="mt-3 inline-flex items-center gap-1.5 text-[13.5px] font-bold text-gold-deep group-hover:gap-2.5 transition-all">
-            קראו על הרעיון שמאחורי האתר
-            <ArrowLeft className="w-4 h-4" />
+            {t.whyCta}
+            <Fwd className="w-4 h-4" />
           </span>
         </div>
       </Link>
@@ -68,10 +71,10 @@ export function Landing() {
         className="flex items-center justify-between rounded-[22px] bg-surface border border-rule px-5 py-4 shadow-[0_8px_24px_-14px_var(--shadow)] hover:border-gold/40 transition active:scale-[0.99]"
       >
         <div>
-          <p className="font-bold text-ink text-[15px]">הצדיק של היום</p>
-          <p className="text-[13px] text-muted mt-0.5">גלו את בעלי ההילולא של כל יום בשנה</p>
+          <p className="font-bold text-ink text-[15px]">{t.nav_today}</p>
+          <p className="text-[13px] text-muted mt-0.5">{t.todayCardSub}</p>
         </div>
-        <ArrowLeft className="w-5 h-5 text-gold" />
+        <Fwd className="w-5 h-5 text-gold" />
       </Link>
 
       <SubscribeForm />

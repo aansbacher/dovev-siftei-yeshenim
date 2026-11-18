@@ -29,3 +29,9 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+
+# Content-audit working files (5-agent pipeline)
+audit/
+.env

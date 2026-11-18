@@ -1,6 +1,7 @@
 import { HDate } from '@hebcal/core'
 import { getHebrewDate } from '../../lib/hebrewDate'
 import { ChevronRight, ChevronLeft, CalendarDays } from 'lucide-react'
+import { useI18n, hebDateEn } from '../../lib/i18n'
 
 interface DayNavigatorProps {
   date: Date
@@ -18,10 +19,15 @@ function moveHebrewMonth(date: Date, delta: number): Date {
 }
 
 export function DayNavigator({ date, onChange }: DayNavigatorProps) {
+  const { t, lang, dir } = useI18n()
   const isoDate = date.toISOString().slice(0, 10)
   const todayIso = new Date().toISOString().slice(0, 10)
   const isToday = isoDate === todayIso
-  const { hebrewDateDisplay } = getHebrewDate(date)
+  const { hebrewDateDisplay, hebrewDay, hebrewMonth } = getHebrewDate(date)
+  const dateLabel = lang === 'en' ? hebDateEn(hebrewDay, hebrewMonth) : hebrewDateDisplay
+  // In RTL, "back" (yesterday) sits on the right; in LTR it sits on the left.
+  const PrevIcon = lang === 'en' ? ChevronLeft : ChevronRight
+  const NextIcon = lang === 'en' ? ChevronRight : ChevronLeft
 
   const moveDay = (amount: number) => {
     const next = new Date(date)
@@ -30,26 +36,26 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-rule bg-surface p-3 shadow-[0_6px_20px_-12px_var(--shadow)]">
-      {/* ── אתמול · היום · מחר ── */}
+    <div className="rounded-2xl border border-rule bg-surface p-3 shadow-[0_6px_20px_-12px_var(--shadow)]" dir={dir}>
+      {/* ── yesterday · today · tomorrow ── */}
       <div className="grid grid-cols-3 gap-1.5">
         <button
           type="button"
           onClick={() => moveDay(-1)}
           className="flex items-center justify-center gap-1 rounded-xl bg-surface-2 border border-rule py-3 text-[13px] font-semibold text-ink-soft hover:border-gold/40 transition active:scale-95"
         >
-          <ChevronRight className="h-4 w-4" />
-          אתמול
+          <PrevIcon className="h-4 w-4" />
+          {t.cal_yesterday}
         </button>
 
         <button
           type="button"
           onClick={() => onChange(new Date())}
-          aria-label="חזרה להיום"
+          aria-label={t.cal_backToToday}
           className="flex flex-col items-center justify-center rounded-xl bg-accent-soft border border-[color:var(--warm-line)] py-1.5 leading-tight transition active:scale-95"
         >
-          <span className="text-[10px] font-bold text-warm-deep">{isToday ? 'היום' : 'חזרה להיום'}</span>
-          <span className="text-[13.5px] font-black text-ink">{hebrewDateDisplay}</span>
+          <span className="text-[10px] font-bold text-warm-deep">{isToday ? t.cal_today : t.cal_backToToday}</span>
+          <span className="text-[13.5px] font-black text-ink">{dateLabel}</span>
         </button>
 
         <button
@@ -57,8 +63,8 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
           onClick={() => moveDay(1)}
           className="flex items-center justify-center gap-1 rounded-xl bg-surface-2 border border-rule py-3 text-[13px] font-semibold text-ink-soft hover:border-gold/40 transition active:scale-95"
         >
-          מחר
-          <ChevronLeft className="h-4 w-4" />
+          {t.cal_tomorrow}
+          <NextIcon className="h-4 w-4" />
         </button>
       </div>
 
@@ -69,8 +75,8 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
           onClick={() => onChange(moveHebrewMonth(date, -1))}
           className="flex items-center gap-1 text-[12px] font-medium text-muted hover:text-ink transition px-2 py-1.5"
         >
-          <ChevronRight className="h-3.5 w-3.5" />
-          חודש קודם
+          <PrevIcon className="h-3.5 w-3.5" />
+          {t.cal_prevMonth}
         </button>
 
         <label className="flex items-center gap-1.5 text-[12px] text-muted cursor-pointer hover:text-ink transition">
@@ -91,8 +97,8 @@ export function DayNavigator({ date, onChange }: DayNavigatorProps) {
           onClick={() => onChange(moveHebrewMonth(date, 1))}
           className="flex items-center gap-1 text-[12px] font-medium text-muted hover:text-ink transition px-2 py-1.5"
         >
-          חודש הבא
-          <ChevronLeft className="h-3.5 w-3.5" />
+          {t.cal_nextMonth}
+          <NextIcon className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>
