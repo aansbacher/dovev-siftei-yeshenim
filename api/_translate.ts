@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js'
 // Shared helper (NOT an HTTP endpoint — leading underscore keeps Vercel from routing it).
 // Auto-translates a tzaddik's Hebrew fields into the English (_en) mirror columns.
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const sb = createClient(process.env.VITE_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
 // Hebrew source field -> English mirror column
@@ -85,6 +84,9 @@ export async function translateTzaddik(
     }
 
     if (Object.keys(src).length) {
+      // Lazy-init so a missing/empty key can never crash module load (keeps the admin login working).
+      if (!process.env.ANTHROPIC_API_KEY) return { ok: false, error: 'ANTHROPIC_API_KEY not configured' }
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
       const user = `Translate each of the following Hebrew fields to English. Return ONLY a JSON object whose keys are exactly these field names.\n\n${JSON.stringify(src, null, 2)}`
       const msg = await anthropic.messages.create({
         model: 'claude-sonnet-5-5',

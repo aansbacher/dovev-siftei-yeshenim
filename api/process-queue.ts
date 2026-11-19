@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { translateTzaddik } from './_translate'
 
 // Opus 5.5 for quality (vision + verification + storyteller writing).
 // Switch to 'claude-sonnet-5-5' if you need faster/cheaper runs.
@@ -139,8 +138,14 @@ export default async function handler(req: any, res: any) {
       await sb.from('tzaddikim').update(fields).eq('id', targetId)
     }
 
-    // Auto-translate the freshly written Hebrew into the English (_en) columns (best-effort).
-    const tr = await translateTzaddik(targetId).catch((e: any) => ({ ok: false, error: e?.message }))
+    // Auto-translate the freshly written Hebrew into the English (_en) columns (best-effort, dynamically imported).
+    let tr: { ok: boolean; translated?: string[]; error?: string } = { ok: true, translated: [] }
+    try {
+      const mod = await import('./_translate')
+      tr = await mod.translateTzaddik(targetId)
+    } catch (e: any) {
+      tr = { ok: false, error: e?.message }
+    }
 
     await sb.from('suggestions').update({ status: 'done' }).eq('id', sug.id)
     res.json({ ok: true, processed: 1, action: sug.type === 'new_tzaddik' ? 'created' : 'updated', id: sug.id, tzaddik_id: targetId, name: j.popular_name, translated: tr.ok ? (tr as any).translated : [], translateError: tr.ok ? undefined : (tr as any).error })

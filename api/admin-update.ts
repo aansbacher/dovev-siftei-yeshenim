@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { translateTzaddik, HE_TRANSLATABLE } from './_translate'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -7,6 +6,7 @@ const supabase = createClient(
 )
 
 const ALLOWED_FIELDS = ['image_url', 'biography', 'story', 'torah', 'quote', 'popular_name', 'full_name', 'years', 'stream', 'role', 'hebrew_month', 'hebrew_day', 'importance_score']
+const HE_TRANSLATABLE = ['popular_name', 'full_name', 'role', 'years', 'quote', 'biography', 'story', 'torah']
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -42,11 +42,17 @@ export default async function handler(req: any, res: any) {
   if (error) return res.status(500).json({ error: error.message })
 
   // Auto-translate any changed Hebrew content into the English (_en) columns.
-  // Best-effort: a translation failure must never fail the (already successful) Hebrew save.
+  // Dynamically imported AFTER the save so the translate module can never affect
+  // the login/save paths; best-effort — a failure never fails the (successful) save.
   const changedHe = Object.keys(clean).filter(k => HE_TRANSLATABLE.includes(k))
   let translate: { ok: boolean; translated?: string[]; error?: string } = { ok: true, translated: [] }
   if (changedHe.length) {
-    translate = await translateTzaddik(id, changedHe).catch((e: any) => ({ ok: false, error: e?.message }))
+    try {
+      const mod = await import('./_translate')
+      translate = await mod.translateTzaddik(id, changedHe)
+    } catch (e: any) {
+      translate = { ok: false, error: e?.message }
+    }
   }
   res.json({ ok: true, translated: translate.ok ? translate.translated : [], translateError: translate.ok ? undefined : translate.error })
 }
