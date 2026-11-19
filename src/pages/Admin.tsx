@@ -477,7 +477,12 @@ export function Admin() {
       })
       const data = await res.json()
       if (res.ok) {
-        setMsg({ text: 'נשמר בהצלחה ✓', ok: true })
+        const msgText = data.translateError
+          ? 'נשמר ✓ — אך התרגום לאנגלית נכשל (בדקו קרדיט ב-Anthropic)'
+          : (Array.isArray(data.translated) && data.translated.length > 0)
+            ? 'נשמר ותורגם לאנגלית ✓'
+            : 'נשמר בהצלחה ✓'
+        setMsg({ text: msgText, ok: true })
         const updated = { ...selected, ...fields } as TzaddikRow
         setSelected(updated)
         setTzaddikim(prev => prev.map(t => t.id === selected.id ? updated : t))

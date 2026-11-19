@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { translateTzaddik, HE_TRANSLATABLE } from './_translate'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -39,5 +40,13 @@ export default async function handler(req: any, res: any) {
 
   const { error } = await supabase.from('tzaddikim').update(clean).eq('id', id)
   if (error) return res.status(500).json({ error: error.message })
-  res.json({ ok: true })
+
+  // Auto-translate any changed Hebrew content into the English (_en) columns.
+  // Best-effort: a translation failure must never fail the (already successful) Hebrew save.
+  const changedHe = Object.keys(clean).filter(k => HE_TRANSLATABLE.includes(k))
+  let translate: { ok: boolean; translated?: string[]; error?: string } = { ok: true, translated: [] }
+  if (changedHe.length) {
+    translate = await translateTzaddik(id, changedHe).catch((e: any) => ({ ok: false, error: e?.message }))
+  }
+  res.json({ ok: true, translated: translate.ok ? translate.translated : [], translateError: translate.ok ? undefined : translate.error })
 }
